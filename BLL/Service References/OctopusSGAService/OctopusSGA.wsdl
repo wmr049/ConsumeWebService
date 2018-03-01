@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="OctopusSGA" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/Opus.Octopus.IntegracaoSGA" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ICRM_ObterNaturezasEvento_InputMessage">
+    <wsdl:part name="parameters" element="tns:ObterNaturezasEvento" />
+  </wsdl:message>
+  <wsdl:message name="ICRM_ObterNaturezasEvento_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ObterNaturezasEventoResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICRM_IncluirEventoCRM_InputMessage">
+    <wsdl:part name="parameters" element="tns:IncluirEventoCRM" />
+  </wsdl:message>
+  <wsdl:message name="ICRM_IncluirEventoCRM_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IncluirEventoCRMResponse" />
+  </wsdl:message>
+  <wsdl:message name="IVenda_RegistrarVenda_InputMessage">
+    <wsdl:part name="parameters" element="tns:RegistrarVenda" />
+  </wsdl:message>
+  <wsdl:message name="IVenda_RegistrarVenda_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RegistrarVendaResponse" />
+  </wsdl:message>
+  <wsdl:message name="IVenda_CancelarVenda_InputMessage">
+    <wsdl:part name="parameters" element="tns:CancelarVenda" />
+  </wsdl:message>
+  <wsdl:message name="IVenda_CancelarVenda_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CancelarVendaResponse" />
+  </wsdl:message>
+  <wsdl:message name="IRepasse_RegistrarRepasseLFG_InputMessage">
+    <wsdl:part name="parameters" element="tns:RegistrarRepasseLFG" />
+  </wsdl:message>
+  <wsdl:message name="IRepasse_RegistrarRepasseLFG_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RegistrarRepasseLFGResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ICRM">
+    <wsdl:operation name="ObterNaturezasEvento">
+      <wsdl:input wsaw:Action="http://tempuri.org/ICRM/ObterNaturezasEvento" message="tns:ICRM_ObterNaturezasEvento_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ICRM/ObterNaturezasEventoResponse" message="tns:ICRM_ObterNaturezasEvento_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IncluirEventoCRM">
+      <wsdl:input wsaw:Action="http://tempuri.org/ICRM/IncluirEventoCRM" message="tns:ICRM_IncluirEventoCRM_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ICRM/IncluirEventoCRMResponse" message="tns:ICRM_IncluirEventoCRM_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IVenda">
+    <wsdl:operation name="RegistrarVenda">
+      <wsdl:input wsaw:Action="http://tempuri.org/IVenda/RegistrarVenda" message="tns:IVenda_RegistrarVenda_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IVenda/RegistrarVendaResponse" message="tns:IVenda_RegistrarVenda_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CancelarVenda">
+      <wsdl:input wsaw:Action="http://tempuri.org/IVenda/CancelarVenda" message="tns:IVenda_CancelarVenda_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IVenda/CancelarVendaResponse" message="tns:IVenda_CancelarVenda_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IRepasse">
+    <wsdl:operation name="RegistrarRepasseLFG">
+      <wsdl:input wsaw:Action="http://tempuri.org/IRepasse/RegistrarRepasseLFG" message="tns:IRepasse_RegistrarRepasseLFG_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IRepasse/RegistrarRepasseLFGResponse" message="tns:IRepasse_RegistrarRepasseLFG_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_ICRM" type="tns:ICRM">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ObterNaturezasEvento">
+      <soap:operation soapAction="http://tempuri.org/ICRM/ObterNaturezasEvento" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IncluirEventoCRM">
+      <soap:operation soapAction="http://tempuri.org/ICRM/IncluirEventoCRM" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_IVenda" type="tns:IVenda">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RegistrarVenda">
+      <soap:operation soapAction="http://tempuri.org/IVenda/RegistrarVenda" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CancelarVenda">
+      <soap:operation soapAction="http://tempuri.org/IVenda/CancelarVenda" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_IRepasse" type="tns:IRepasse">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RegistrarRepasseLFG">
+      <soap:operation soapAction="http://tempuri.org/IRepasse/RegistrarRepasseLFG" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="OctopusSGA">
+    <wsdl:port name="BasicHttpBinding_ICRM" binding="tns:BasicHttpBinding_ICRM">
+      <soap:address location="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc" />
+    </wsdl:port>
+    <wsdl:port name="BasicHttpBinding_IVenda" binding="tns:BasicHttpBinding_IVenda">
+      <soap:address location="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc" />
+    </wsdl:port>
+    <wsdl:port name="BasicHttpBinding_IRepasse" binding="tns:BasicHttpBinding_IRepasse">
+      <soap:address location="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

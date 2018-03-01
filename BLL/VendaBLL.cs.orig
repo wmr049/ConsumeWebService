@@ -1,0 +1,3089 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data.SqlClient;
+using DAO;
+using DTO;
+using System.Data;
+using System.Configuration;
+using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
+using Utilitarios;
+using System.Web;
+using System.Web.UI;
+using DAL.DataConnection;
+using Buscape.Bcash.Connector.Service.Transaction;
+using Buscape.Bcash.Connector.Domain.Transaction.Create;
+using Buscape.Bcash.Connector.Domain.Account;
+using Buscape.Bcash.Connector.Domain.Transaction;
+using Buscape.Bcash.Connector.Http.Exception;
+using Buscape.Bcash.Connector.Service.Exception;
+using Buscape.Bcash.Connector.Domain;
+/*using Buscape.Bcash.Connector.Service.Transaction;
+using Buscape.Bcash.Connector.Domain.Transaction.Create;
+using Buscape.Bcash.Connector.Domain.Transaction;
+using Buscape.Bcash.Connector.Domain.Account;
+*/
+namespace BLL
+{
+    public class VendaBLL
+    {
+        public enum TipoRepasse
+        {
+            VendaBalcao = 1,
+            VendaOnLine = 2
+        }
+
+        private const string TRANSACAO_CONCLUIDA = "Transação Concluída";
+        private const string CURRENCY = CurrencyEnum.REAL;
+        private static readonly Random random = new Random();
+
+        public List<InscricaoVendaDTO> ListaBonificacoes { get; set; }
+        ValidacaoVoucherDTO voucherDTO;
+
+        public int ConcluirVendaOnline(VendaEntradaDTO entrada, SqlTransaction Transacao)
+        {
+            int unidadeId = entrada.UnidadeId; //int.Parse(Session["unidadeid"].ToString());
+            int alunoId = entrada.AlunoId;
+            int usuarioId = entrada.UsuarioId;
+            int vendedor = entrada.VendedorId;
+            int grupoEmpresaId = entrada.GrupoEmpresaId;
+            int salaId = entrada.SalaId;
+            int ensalamentoId = entrada.EnsalamentoId;
+
+            double valorTotal = entrada.ValorTotal;
+            string Ip = entrada.IP;
+            DTO.InscricoesVendaDTO inscricoes = entrada.Inscricoes;
+            DTO.ChequesDTO pagamentos = entrada.Pagamentos;
+            int contratoId = 0;
+
+            //lblMensagemPagamento.Visible = false;
+            try
+            {
+                bool primeiraparcelaBoleto = false;
+                bool existePagamentoBoleto = ExistePagamentoBoleto(pagamentos, ref primeiraparcelaBoleto);
+
+                //imgSequencia.ImageUrl = "/" + ConfigurationManager.AppSettings["projectName"] + "/IMG/sequencia/seq_5.png";
+
+
+                //string Ip = Request.ServerVariables.Get("REMOTE_ADDR");
+
+                bool isContratoAtivo = (IsUnidadePropria(unidadeId) && IsUnidadePraetorium(unidadeId) && existePagamentoBoleto && primeiraparcelaBoleto) || (existePagamentoBoleto && IsUnidadeInterativa(unidadeId));
+
+                //Insere contrato
+                contratoId = ContratoBLL.InserirNovoContratoComSala(entrada.PedidoId, alunoId, unidadeId, usuarioId, vendedor, pagamentos, inscricoes, valorTotal, Ip, isContratoAtivo, salaId, entrada.PercentualTaxaBCash, Transacao);
+
+                /**
+                if (cancelamentoNovo && erroDeVenda)
+                {
+                    contratoId = ContratoBLL.InserirNovoContrato(alunoId, unidadeId, int.Parse(Session["usuarioId"].ToString()), int.Parse(ddlVendedor.SelectedValue), pagamentos, inscricoes, valorTotalComCredito, Ip, isContratoAtivo, Transacao);
+                }
+                else
+                {
+                    contratoId = ContratoBLL.InserirNovoContrato(alunoId, unidadeId, int.Parse(Session["usuarioId"].ToString()), int.Parse(ddlVendedor.SelectedValue), pagamentos, inscricoes, valorTotal, Ip, isContratoAtivo, Transacao);
+                }**/
+                //btnImprimirBoleto.Visible = false;
+
+                if (IsUnidadePropria(unidadeId) && IsUnidadePraetorium(unidadeId) && existePagamentoBoleto || (existePagamentoBoleto && IsUnidadeInterativa(unidadeId)))
+                {
+                    try
+                    {
+                        //não gerar boleto
+                        //string urlBoleto = GerarFaturas(pagamentos, contratoId, unidadeId, cursoId, IsUnidadeInterativa(unidadeId), alunoId, Transacao);
+
+
+                        //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "boleto", "window.open('" + urlBoleto + "');", true);
+                        //btnImprimirBoleto.Visible = true;
+                        //btnImprimirBoleto.Attributes.Add("onclick", "window.open('" + urlBoleto + "');");
+
+                        //Conexao.FecharTransacao(null, Transacao);
+                    }
+                    catch (Exception ex)
+                    {
+                        //Transacao.Rollback();
+                        throw ex;
+                    }
+                }
+                else
+                {
+                    //Conexao.FecharTransacao(null, Transacao);
+                }
+
+                //Atualiza todos os Cheques do Contrato Para não custodiado 
+                ContratoPagamentoBLL.NaoCustodiarCheques(contratoId);
+                //Finaliza os cancelamentos
+                /**
+                if (cancelamentoNovo)
+                {
+                    if (mudancaDeCurso)
+                    {
+                        concluirMudancaCurso();
+                    }
+                    else if (erroDeVenda)
+                    {
+                        CancelamentoBLL cancelamentoBll = new CancelamentoBLL();
+                        CancelamentoDTO cancelamento = cancelamentoBll.Obter(cancelamentoId);
+
+                        concluirErroDeVenda(cancelamento.ContratoId, contratoId);
+                    }
+                }
+                else
+                    //lembrar de fazer a session ficar nula novamente
+                    if (ContratoACancelar != null)
+                    {
+                        ContratoBLL.CancelarContrato(ContratoACancelar, null);
+                        Session[StateManagement.SessionState.CONTRATO_A_CANCELAR] = null;
+                    }
+                */
+
+                ////Formatacao da tela
+                ////Validação para contrato de Financiamento
+                //if (ddlTipoPagamento.SelectedItem.Text.Equals("financiamento".ToUpper()))
+                //{
+                //    //Desabilita botões
+                //    btnImprimir.Enabled = false;
+                //    btnImprimir.ToolTip = "O recibo só estará disponível após aprovação do Financiamento.";
+
+                //    btnImprimirClausulas.Enabled = false;
+                //    btnImprimirClausulas.ToolTip = "O contrato só estará disponível após a aprovação do Financiamento.";
+
+                //    btnImprimirRequerimentoPos.Enabled = false;
+                //    btnImprimirRequerimentoPos.ToolTip = "O requerimento de matrícula só estará disponível após a aprovação do Financiamento.";
+                //    //Atribuição de evento ao botão
+                //    btnImprimirCartaHabilitacao.Attributes.Add("onclick", "cartaHabilitacaoPrint(" + contratoId + ");");
+                //}
+                //else
+                //{
+                //    //Desabilita botão
+                //    btnImprimirCartaHabilitacao.Enabled = false;
+                //    btnImprimirCartaHabilitacao.ToolTip = "não disponível para este contrato.";
+                //    //Atribuição de evento ao botão
+                //    btnImprimir.Attributes.Add("onclick", "contratopagamentoPrint(" + contratoId + ");");
+                //    btnImprimirClausulas.Attributes.Add("onclick", "contratoPrint(" + contratoId + ");");
+                //    btnImprimirRequerimentoPos.Attributes.Add("onclick", "contratoRequerimento(" + contratoId + ");");
+                //}
+
+                //lblMensagemConcluido.Text = Mensagem.SUCESSO;
+                //lblMensagemConcluido.Visible = true;
+                //lblMensagemPagamento.Visible = false;
+            }
+            catch (Exception ex)
+            {
+                //lblMensagemConcluido.Text = Mensagem.ERRO + "<br/>" + ex.Message + "<br/>" + ex.StackTrace;
+                //lblMensagemConcluido.CssClass = "erro";
+                //lblMensagemConcluido.Visible = true;
+                //btnImprimir.Visible = false;
+                //btnImprimirClausulas.Visible = false;
+
+                contratoId = 0;
+
+                //Transacao.Rollback();
+                throw ex;
+            }
+            finally
+            {
+                //lblMensagemConcluido.Text = Mensagem.SUCESSO;
+                //divConcluir.Visible = false;
+                //divConcluido.Visible = true;
+                ////lblMensagemConcluido.Visible = true;
+                ////lblMensagemPagamento.Visible = false;
+                //pagamento.Visible = false;
+
+                //BindPagamento(null);
+            }
+            //btnImprimirClausulas.Visible = !IsUnidadeInterativa;
+
+            if (contratoId != 0)
+            {
+                // Lança os valores no extrato
+                IncluirLancamentosExtrato(contratoId, unidadeId, inscricoes, usuarioId, grupoEmpresaId);
+            }
+
+            ChequeBLL.MarcarIsUsado(contratoId);
+            EnsalamentoBLL.EnsalarContrato(contratoId, ensalamentoId);
+            return contratoId;
+        }
+
+        #region Controle Unidade
+
+        private static bool IsUnidadePropria(int unidadeId)
+        {
+            DTO.Unidade unidade = UnidadeBLL.Selecionar(unidadeId);
+            return unidade.IsUnidadePropria;
+        }
+
+        private static bool IsUnidadePraetorium(int unidadeId)
+        {
+            DTO.Unidade unidade = UnidadeBLL.Selecionar(unidadeId);
+            return (unidade.TipoId == DTO.UnidadeTipoDTO.UNIDADE_TIPO_PRAETORIUM);
+        }
+
+        private static bool IsUnidadeInterativa(int unidadeId)
+        {
+            return UnidadeBLL.IsUnidadeInterativa(unidadeId);
+        }
+
+        #endregion
+        #region BOLETO
+        private bool ExistePagamentoBoleto(DTO.ChequesDTO parcelas, ref bool isPrimeiraParcela)
+        {
+            int cont = 0;
+            foreach (DTO.ChequeDTO c in parcelas)
+            {
+                cont++;
+                if (c.tipopagamento == DTO.TipoPagamentoDTO.BOLETO) //if (r.Cells[0].Text.ToUpper().Equals("BOLETO"))
+                {
+                    if (cont == 1)
+                        isPrimeiraParcela = true;
+                    else
+                        isPrimeiraParcela = false;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool ExistePagamentoBoleto(GridView dgvParcelas, ref bool isPrimeiraParcela)
+        {
+            int cont = 0;
+            foreach (GridViewRow r in dgvParcelas.Rows)
+            {
+                cont++;
+                if (r.Cells[0].Text.ToUpper().Equals("BOLETO"))
+                {
+                    if (cont == 1)
+                        isPrimeiraParcela = true;
+                    else
+                        isPrimeiraParcela = false;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private string GerarFaturas(DTO.ChequesDTO dgvParcelas, int contratoId, int unidadeId, int cursoId, bool IsUnidadeInterativa, int alunoId, SqlTransaction tran)
+        {
+            try
+            {
+                //int unidadeId = int.Parse(Session["unidadeid"].ToString());
+                //int cursoId = Convert.ToInt32(ddlCurso.SelectedValue.Split('|')[0]);
+                int grupoEmpresaId = CursoBLL.Recuperar(cursoId).GrupoId;
+
+                int aplicacaoSolicitanteId = 0;
+                if (grupoEmpresaId == DTO.GrupoEmpresaDTO.PRAETORIUM)
+                    aplicacaoSolicitanteId = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["FinanceiroPraetorium.AplicacaoSolicitanteId"].ToString());
+                else if (grupoEmpresaId == DTO.GrupoEmpresaDTO.UNIDERP_PRAETORIUM)
+                    aplicacaoSolicitanteId = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["FinanceiroUniderpPraetorium.AplicacaoSolicitanteId"].ToString());
+                else if (IsUnidadeInterativa)
+                    aplicacaoSolicitanteId = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["UnidadeInterativa.AplicacaoSolicitanteId"].ToString());
+
+                string urlFirst = String.Empty;
+
+                List<DTO.Pagamento> contratopagamentoList = ContratoPagamentoBLL.List(contratoId); //Lista com os IDs do ContratoPagamento
+                int index = 0;
+
+                foreach (DTO.ChequeDTO p in dgvParcelas)
+                {
+                    if (p.tipopagamento == DTO.TipoPagamentoDTO.BOLETO)
+                    {
+                        string data = p.dt_vencimento.Date.ToString();
+                        decimal valor = p.valor;
+
+                        DTO.FaturaDTO f = new DTO.FaturaDTO();
+                        f.UnidadeId = unidadeId;
+                        f.GrupoEmpresaId = grupoEmpresaId;
+                        f.TipoFaturaId = DTO.TipoFaturaDTO.TIPOFATURA_VENDA_DIRETA;
+                        f.DataVencimento = Convert.ToDateTime(data + " 23:59:59");
+                        f.DataFechamento = Convert.ToDateTime(data);
+                        f.DataFaturamento = Convert.ToDateTime(data);
+                        if (f.DataVencimento < DateTime.Now.Date)
+                            f.StatusFaturaId = DTO.StatusFaturaDTO.VENCIDA;
+                        else
+                            f.StatusFaturaId = DTO.StatusFaturaDTO.AGUARDANDO_PAGAMENTO;
+
+                        f.ValorOriginal = valor;//  Convert.ToDecimal(p.Cells[2].Text.Replace("R$ ", String.Empty));
+                        f.ValorPago = null;
+                        f.DataPagamento = null;
+
+
+                        int faturaId = FaturaBLL.Inserir(f, tran);
+                        string numeroDoc = FaturaBoletoBLL.GerarNumeroDocumento(aplicacaoSolicitanteId);
+
+                        //Inserir Vínculo entre Fatura e Título de Repasse
+                        FaturaBLL.InserirTituloRepasse(faturaId, contratopagamentoList[index].Id, tran);
+                        index++;
+
+                        if (String.IsNullOrEmpty(urlFirst))
+                            urlFirst = GerarBoleto(faturaId, numeroDoc, (decimal)f.ValorOriginal, f.DataVencimento, aplicacaoSolicitanteId, alunoId, IsUnidadeInterativa, tran);
+                        else
+                            GerarBoleto(faturaId, numeroDoc, (decimal)f.ValorOriginal, f.DataVencimento, aplicacaoSolicitanteId, alunoId, IsUnidadeInterativa, tran);
+                    }
+                }
+
+                return urlFirst;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private string GerarBoleto(int faturaId, string numeroDoc, decimal valorBoleto, DateTime vencimentoBoleto, int aplicacaoSolicitanteId, int alunoId, bool IsUnidadeInterativa, SqlTransaction tran)
+        {
+            DTO.FaturaDTO f = new DTO.FaturaDTO();
+            f.FaturaId = faturaId;
+            f = FaturaBLL.Retrieve(f, tran).FirstOrDefault();
+
+            if (f != null)
+            {
+                /* Dados da Aplicação */
+                string numeroDocumento = numeroDoc;
+                string aplicacaoSolicitante = aplicacaoSolicitanteId.ToString();
+                string valor = valorBoleto.ToString("N2");
+                string vencimento = vencimentoBoleto.ToString("dd/MM/yyyy HH:mm:ss");
+                decimal valorFatura = (decimal)f.ValorOriginal;
+                string instrucao = "Após Vencimento: Multa(2%) = R$" + (valorFatura * (decimal)0.02).ToString("N2") + ". Juros(0,033%) = R$" + (valorFatura * (decimal)0.00033).ToString("N2") + "/dia.<br/>Você poderá imprimir boletos referentes as demais parcelas do curso acessando a área do aluno.";
+
+                /* Dados do Cedente */
+                string nome = String.Empty;
+                string rua = String.Empty;
+                string bairro = String.Empty;
+                string cidade = String.Empty;
+                string uf = String.Empty;
+                string cep = String.Empty;
+
+                DAO.Entity.Aluno a = new DAO.Entity.Aluno();
+                a = BLL.AlunoBLL.Selecionar(alunoId);
+
+                if (a != null)
+                {
+                    nome = a.Nome;
+                    rua = a.Endereco;
+                    bairro = a.EndBairro;
+                    cidade = a.EndCidade;
+                    uf = a.EndUF;
+                    cep = Utilitarios.Util.FormatarCEP(a.Cep);
+                }
+
+                string[] dadosAplicacao = { numeroDocumento, aplicacaoSolicitante, valor, vencimento, instrucao, "ST" };
+                string[] dadosSacado = { nome, rua, bairro, cidade, uf, cep };
+                bool jaImprimiu;
+                bool vencido = false;
+
+                string url = "";
+                //BoletoService bs = new BoletoService();
+                //Descomentar e tirar essa lina de baixo
+                jaImprimiu = true;
+                if (IsUnidadeInterativa)
+                {
+                    DTO.GradePoliticaComercialDTO gpc = BLL.GradePoliticaComercialBLL.ObterPorFaturaId(faturaId, tran);
+                    if (gpc.ConcederDescontoPontualidade)
+                    {
+                        var valorComDesconto = (valorBoleto * ((gpc.PercentualDesconto ?? 0) / (decimal)100.0));
+                        //url = bs.GerarBoletoPontualidade(dadosAplicacao, dadosSacado, gpc.DiasAntecipacao ?? 0, valorComDesconto, out jaImprimiu, out vencido);
+                    }
+                    else
+                    {
+                        //url = bs.GerarBoleto(dadosAplicacao, dadosSacado, out jaImprimiu, out vencido);
+                    }
+                }
+                else
+                {
+                    url = "";
+                    //url = bs.GerarBoleto(dadosAplicacao, dadosSacado, out jaImprimiu, out vencido);
+                }
+
+                if (!jaImprimiu)
+                {
+                    DTO.BoletoDTO b = new DTO.BoletoDTO();
+                    b = BoletoBLL.Recuperar(Convert.ToInt32(aplicacaoSolicitante), Convert.ToInt64(numeroDocumento));
+                    string nossoNumero = b.NossoNumero;
+
+                    FaturaBoletoBLL.Inserir(faturaId, DateTime.Now, nossoNumero, tran);
+                }
+                return url;
+            }
+
+            return String.Empty;
+        }
+
+        #endregion
+        #region Extrato
+        private void IncluirLancamentosExtrato(int contratoId, int unidadeId, DTO.InscricoesVendaDTO inscricoes, int usuarioId, int grupoEmpresaId)
+        {
+            decimal valorTotalVendaBruto = 0;
+            decimal valorTotalDescontoBruto = 0;
+            decimal valorTotalDescontoParceiro = 0;
+            decimal valorTotalVendaParceiro = 0;
+
+            foreach (InscricaoVendaDTO venda in inscricoes)
+            {
+                valorTotalVendaBruto += venda.ValorVendaBruto;
+                valorTotalDescontoBruto += venda.ValorDescontoBruto;
+                valorTotalDescontoParceiro += venda.ValorDescontoParceiro;
+                valorTotalVendaParceiro += venda.ValorVendaParceiro;
+            }
+
+            int mtarizId = GrupoEmpresaBLL.Listar(new GrupoEmpresaDTO() { grupoEmpresaId = grupoEmpresaId })[0].matrizId.Value;
+
+            if (valorTotalVendaBruto != 0)
+            {
+                ExtratoLancamentoDTO lancamentoTotalBruto = new ExtratoLancamentoDTO()
+                {
+                    UnidadeId = unidadeId,
+                    MatrizId = mtarizId,
+                    ContratoId = contratoId,
+                    DetalheMovimentacaoId = DetalheMovimentacaoDTO.VENDA_TOTAL,
+                    Valor = valorTotalVendaBruto,
+                    DataCompetencia = DateTime.Now,
+                    DataMovimento = DateTime.Now,
+                    OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                    UsuarioId = usuarioId,
+                    TipoLancamentoId = TipoLancamentoDTO.DEBITO
+                };
+                ExtratoLancamentoBLL.Inserir(lancamentoTotalBruto);
+            }
+
+            if (valorTotalDescontoBruto != 0)
+            {
+                ExtratoLancamentoDTO lancamentoTotalDesconto = new ExtratoLancamentoDTO()
+                {
+                    UnidadeId = unidadeId,
+                    MatrizId = mtarizId,
+                    ContratoId = contratoId,
+                    DetalheMovimentacaoId = DetalheMovimentacaoDTO.DESCONTO_TOTAL,
+                    Valor = valorTotalDescontoBruto,
+                    DataCompetencia = DateTime.Now,
+                    DataMovimento = DateTime.Now,
+                    OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                    UsuarioId = usuarioId,
+                    TipoLancamentoId = TipoLancamentoDTO.CREDITO
+                };
+                ExtratoLancamentoBLL.Inserir(lancamentoTotalDesconto);
+            }
+
+            Unidade u = UnidadeBLL.Selecionar(unidadeId);
+
+            if (valorTotalVendaParceiro != 0 && !u.IsUnidadePropria)
+            {
+                ExtratoLancamentoDTO lancamentoValorParceiro = new ExtratoLancamentoDTO()
+                {
+                    UnidadeId = unidadeId,
+                    MatrizId = mtarizId,
+                    ContratoId = contratoId,
+                    DetalheMovimentacaoId = DetalheMovimentacaoDTO.PARTE_PARCEIRO,
+                    Valor = valorTotalVendaParceiro,
+                    DataCompetencia = DateTime.Now,
+                    DataMovimento = DateTime.Now,
+                    OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                    UsuarioId = usuarioId,
+                    TipoLancamentoId = TipoLancamentoDTO.CREDITO
+                };
+                ExtratoLancamentoBLL.Inserir(lancamentoValorParceiro);
+            }
+
+            if (valorTotalDescontoParceiro != 0 && !u.IsUnidadePropria)
+            {
+                ExtratoLancamentoDTO lancamentoDescontoParceiro = new ExtratoLancamentoDTO()
+                {
+                    UnidadeId = unidadeId,
+                    MatrizId = mtarizId,
+                    ContratoId = contratoId,
+                    DetalheMovimentacaoId = DetalheMovimentacaoDTO.DESCONTO_PARCEIRO,
+                    Valor = valorTotalDescontoParceiro,
+                    DataCompetencia = DateTime.Now,
+                    DataMovimento = DateTime.Now,
+                    OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                    UsuarioId = usuarioId,
+                    TipoLancamentoId = TipoLancamentoDTO.DEBITO
+                };
+                ExtratoLancamentoBLL.Inserir(lancamentoDescontoParceiro);
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Verifica se o aluno possui algum tipo de desconto para ser aplicado na venda.
+        /// </summary>
+        /// <param name="exibirMensagem"></param>
+        /// Indica se a mensagem deve ser exibida para o usuário.
+        /// <returns></returns>
+        public static InscricaoVendaDTO ValidaDescontosAluno(int gradeId, int turmaId, int unidadeId, int alunoId, string alunoCpf, bool eCommerce)
+        {
+            decimal PercentualBolsaVinculada = 0;
+            decimal PercentualBolsaConcurso = 0;
+            decimal PercentualBolsaConvenio = 0;
+            decimal PercentualAntecipacao = 0;
+            decimal PercentualBolsa = 0;
+            int descontogradeid = 0;
+            string TipoBolsa = "";
+            string DescontoTipoBolsa = "";
+
+            //Vinculada
+            int vTurmaId = turmaId; //TurmaTransmissaoBLL.SelecionarBySala(turmaId)[0].TurmaId;
+            //List<BolsaAlunoDTO> bolsaVinculada = BolsaAlunoBLL.SelecionarVinculada(unidadeId, 'B', alunoId, vTurmaId);
+            List<BolsaAlunoDTO> bolsaVinculada = new List<BolsaAlunoDTO>();
+
+            //Bolsa aluno
+            DataSet dsBolsa = BolsaAlunoBLL.SelectBolsaAlunoVinculada(unidadeId, 'B', alunoId, vTurmaId, gradeId, GradeBLL.Recuperar(gradeId).CursoId, alunoCpf);
+            //DataSet dsBolsa = BolsaAlunoBLL.SelectBolsaAlunoVinculada(unidadeId, 'B', alunoId, 0, gradeId, GradeBLL.Recuperar(gradeId).CursoId, alunoCpf);
+            foreach (DataRow item in dsBolsa.Tables[0].Rows)
+            {
+                BolsaAlunoDTO b = new BolsaAlunoDTO();
+                b.BolsaAlunoId = Convert.ToInt32(item.ItemArray.GetValue(0));
+                b.BolsaPercentual = Convert.ToDecimal(item.ItemArray.GetValue(1));
+                b.TipoBolsa = Convert.ToChar(item.ItemArray.GetValue(2));
+                b.AlunoId = Convert.ToInt32(item.ItemArray.GetValue(3));
+
+                bolsaVinculada.Add(b);
+            }
+
+            //////Bolsa professor
+            ////dsBolsa = BolsaAlunoBLL.SelectBolsaAlunoVinculada(unidadeId, 'P', alunoId, vTurmaId, gradeId, GradeBLL.Recuperar(gradeId).CursoId, alunoCpf);
+            ////foreach (DataRow item in dsBolsa.Tables[0].Rows)
+            ////{
+            ////    BolsaAlunoDTO b = new BolsaAlunoDTO();
+            ////    b.BolsaAlunoId = Convert.ToInt32(item.ItemArray.GetValue(0));
+            ////    b.BolsaPercentual = Convert.ToDecimal(item.ItemArray.GetValue(1));
+            ////    b.TipoBolsa = Convert.ToChar(item.ItemArray.GetValue(2));
+            ////    b.AlunoId = Convert.ToInt32(item.ItemArray.GetValue(3));
+
+            ////    bolsaVinculada.Add(b);
+            ////}
+
+            ////Concurso
+            //List<BolsaAlunoDTO> bolsaConcurso = BolsaAlunoBLL.SelecionarConcurso(unidadeId, 'N', alunoId, alunoCpf);
+            int cursoId = CursoBLL.ListaCursoIdporGradeId(gradeId);
+            List<BolsaAlunoDTO> bolsaConcurso = new List<BolsaAlunoDTO>();
+
+            if (eCommerce == false)
+            {
+                //List<BolsaAlunoDTO> bolsaConcurso = new List<BolsaAlunoDTO>();
+                DataSet dsBolsaConcurso = BolsaAlunoBLL.SelecionarBolsaAlunoConcurso(unidadeId, 'N', alunoId, alunoCpf);
+                foreach (DataRow itemBolsaConcurso in dsBolsaConcurso.Tables[0].Rows)
+                {
+                    BolsaAlunoDTO c = new BolsaAlunoDTO();
+                    c.BolsaAlunoId = Convert.ToInt32(itemBolsaConcurso.ItemArray.GetValue(0));
+                    c.BolsaPercentual = Convert.ToDecimal(itemBolsaConcurso.ItemArray.GetValue(1));
+                    c.TipoBolsa = Convert.ToChar(itemBolsaConcurso.ItemArray.GetValue(2));
+                    c.AlunoId = Convert.ToInt32(itemBolsaConcurso.ItemArray.GetValue(3));
+
+                    bolsaConcurso.Add(c);
+                }
+            }
+            else
+            {
+                string cursoTipo = CursoBLL.TipoPorCurso(cursoId);
+
+                if ((cursoTipo != "N") && (cursoTipo != "O") && (cursoTipo != "P"))
+                {
+                    //List<BolsaAlunoDTO> bolsaConcurso = new List<BolsaAlunoDTO>();
+                    DataSet dsBolsaConcurso = BolsaAlunoBLL.SelecionarBolsaAlunoConcurso(unidadeId, 'N', alunoId, alunoCpf);
+                    foreach (DataRow itemBolsaConcurso in dsBolsaConcurso.Tables[0].Rows)
+                    {
+                        BolsaAlunoDTO c = new BolsaAlunoDTO();
+                        c.BolsaAlunoId = Convert.ToInt32(itemBolsaConcurso.ItemArray.GetValue(0));
+                        c.BolsaPercentual = Convert.ToDecimal(itemBolsaConcurso.ItemArray.GetValue(1));
+                        c.TipoBolsa = Convert.ToChar(itemBolsaConcurso.ItemArray.GetValue(2));
+                        c.AlunoId = Convert.ToInt32(itemBolsaConcurso.ItemArray.GetValue(3));
+
+                        bolsaConcurso.Add(c);
+                    }
+                }
+            }
+            //Convênio
+            //int cursoId = CursoBLL.ListaCursoIdporGradeId(gradeId);
+            List<DTO.Convenio> convenios = ValidaConvenio(cursoId, gradeId, alunoId, unidadeId);  // new List<Convenio>();
+
+            Convenio convenio = new Convenio(); //sem convenio por enquanto
+            if (convenios.Count > 0)
+            {
+                convenio = convenios.Where(c => c.Percentual == convenios.Select(x => x.Percentual).Max()).First();
+                PercentualBolsaConvenio = convenio.Percentual;
+            }
+            else
+            {
+                PercentualBolsaConvenio = 0;
+            }
+
+            BolsaAlunoDTO bolsa = new BolsaAlunoDTO();
+            if (bolsaVinculada.Count > 0)
+            {
+                bolsa = bolsaVinculada.Where(b => b.BolsaPercentual == bolsaVinculada.Select(x => x.BolsaPercentual).Max()).First();
+                PercentualBolsaVinculada = bolsa.BolsaPercentual;
+            }
+            else
+            {
+                PercentualBolsaVinculada = 0;
+            }
+
+            //INICIO VERIFICACAO DESCONTO GRADE (DESCONTO POR ANTECIPACAO) ------- COPIA DA TELA DE VENDA DO SGA  
+            List<DescontoGradeDTO> descontoGrade = DescontoGradeBLL.ListarDescontos(gradeId, unidadeId);
+            if (eCommerce)// Busca apenas os itens disponiveis para o eCommerce
+            {
+                descontoGrade = descontoGrade.FindAll(delegate(DescontoGradeDTO item) { return item.Ecommerce == eCommerce; });
+            }
+            if (descontoGrade.Count > 1)
+            {
+                bool alunoAtivo = false;
+                bool exAluno = false;
+                bool novoAluno = true;
+
+                DescontoTipoBolsa = "NovoAluno";
+
+                List<AlunoCurriculoDTO> curriculoAluno = AlunoCurriculoBLL.Selecionar(alunoId);
+
+                //retira a bolsa de concurso para cursos de Pós
+                if (eCommerce)
+                {
+                    string cursoTipoAux;
+
+                    foreach (AlunoCurriculoDTO c in curriculoAluno)
+                    {
+                        cursoTipoAux = CursoBLL.TipoPorCurso(c.CursoId);
+                        if (((cursoTipoAux == "N") || (cursoTipoAux == "O") || (cursoTipoAux == "P")) && (c.BolsaTipo == "N"))
+                        {
+                            c.Bolsa = "Sem Bolsa ";
+                        }
+                    }
+                }
+
+                if (curriculoAluno.Count > 0)
+                {
+                    foreach (var a in curriculoAluno)
+                    {
+                        if (a.StatusId == 1 || a.StatusId == 4)
+                        {
+                            alunoAtivo = true;
+                            DescontoTipoBolsa = "AlunoAtivo";
+                        }
+                        if (a.StatusId == 5)
+                        {
+                            DescontoTipoBolsa = "ExAluno";
+                            exAluno = true;
+                        }
+
+                    }
+                }
+
+                GradeDTO grade = GradeBLL.Recuperar(gradeId);
+                GradeUnidadeDTO gradeUnidade = GradeUnidadeBLL.ObterGradeUnidade(gradeId, unidadeId);
+                int diasAposInicio = DateTime.Now.Date.Subtract(grade.DataInicio.Date).Days;
+
+                List<DescontoGradeDTO.DescontoGradeIDValorDTO> maiorPercentual = new List<DescontoGradeDTO.DescontoGradeIDValorDTO>();
+
+                //List<decimal> maiorPercentual = new List<decimal>() { 0 };
+                if (diasAposInicio <= 0)
+                {
+                    if (DateTime.Now.Date <= grade.DataInicio.Date && DateTime.Now.Date >= gradeUnidade.Inicio.Date)
+                    {
+                        if (alunoAtivo && descontoGrade[0].PercentualAlunoAtivo > 0)
+                        {
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[0].PercentualAlunoAtivo, DescontoGradeId = descontoGrade[0].DescontoGradeId, DescontoTipo = "AlunoAtivo" });
+                        }
+                        if (exAluno && descontoGrade[0].PercentualExAluno > 0)
+                        {
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[0].PercentualExAluno, DescontoGradeId = descontoGrade[0].DescontoGradeId, DescontoTipo = "ExAluno" });
+                        }
+                        if (novoAluno && descontoGrade[0].PercentualNovoAluno > 0)
+                        {
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[0].PercentualNovoAluno, DescontoGradeId = descontoGrade[0].DescontoGradeId, DescontoTipo = "NovoAluno" });
+                        }
+                    }
+                }
+                else
+                {
+                    if (diasAposInicio <= descontoGrade[1].DiasAntecedencia)
+                    {
+                        if (alunoAtivo && descontoGrade[1].PercentualAlunoAtivo > 0)
+                        {
+
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[1].PercentualAlunoAtivo, DescontoGradeId = descontoGrade[1].DescontoGradeId, DescontoTipo = "AlunoAtivo" });
+                        }
+                        if (exAluno && descontoGrade[1].PercentualExAluno > 0)
+                        {
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[1].PercentualExAluno, DescontoGradeId = descontoGrade[1].DescontoGradeId, DescontoTipo = "ExAluno" });
+                        }
+                        if (novoAluno && descontoGrade[1].PercentualNovoAluno > 0)
+                        {
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[1].PercentualNovoAluno, DescontoGradeId = descontoGrade[1].DescontoGradeId, DescontoTipo = "NovoAluno" });
+                        }
+                    }
+                    else if (diasAposInicio <= descontoGrade[1].DiasAntecedencia + descontoGrade[2].DiasAntecedencia)
+                    {
+                        if (alunoAtivo && descontoGrade[2].PercentualAlunoAtivo > 0)
+                        {
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[2].PercentualAlunoAtivo, DescontoGradeId = descontoGrade[2].DescontoGradeId, DescontoTipo = "AlunoAtivo" });
+                        }
+                        if (exAluno && descontoGrade[2].PercentualExAluno > 0)
+                        {
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[2].PercentualExAluno, DescontoGradeId = descontoGrade[2].DescontoGradeId, DescontoTipo = "ExAluno" });
+                        }
+                        if (novoAluno && descontoGrade[2].PercentualNovoAluno > 0)
+                        {
+                            maiorPercentual.Add(new DescontoGradeDTO.DescontoGradeIDValorDTO() { maiorPercentual = descontoGrade[2].PercentualNovoAluno, DescontoGradeId = descontoGrade[2].DescontoGradeId, DescontoTipo = "NovoAluno" });
+                        }
+                    }
+
+                }
+
+
+                if (maiorPercentual.Count > 0)
+                {
+                    PercentualAntecipacao = maiorPercentual.Max(n => n.maiorPercentual);
+                    descontogradeid = maiorPercentual.Where(n => n.maiorPercentual == PercentualAntecipacao).First().DescontoGradeId;
+                    DescontoTipoBolsa = maiorPercentual.Where(n => n.maiorPercentual == PercentualAntecipacao).First().DescontoTipo;
+                }
+            }
+            else
+            {
+                PercentualAntecipacao = 0;
+            }
+            //FIM VERIFICACAO DESCONTO GRADE (DESCONTO POR ANTECIPACAO)  
+
+            InscricaoVendaDTO venda = new InscricaoVendaDTO();
+
+            //decimal PercentualBolsaConcurso = bolsaConcurso.Count > 0 ? (from BolsaAlunoDTO in bolsaConcurso select BolsaAlunoDTO.BolsaPercentual).Max() : 0;
+
+            BolsaAlunoDTO bConcurso = new BolsaAlunoDTO();
+            if (bolsaConcurso.Count > 0)
+            {
+                bConcurso = bolsaConcurso.Where(bc => bc.BolsaPercentual == bolsaConcurso.Select(x => x.BolsaPercentual).Max()).First();
+                PercentualBolsaConcurso = bConcurso.BolsaPercentual;
+            }
+            else
+            {
+                PercentualBolsaConcurso = 0;
+            }
+
+            if (PercentualBolsaVinculada != 0 || PercentualBolsaConvenio != 0 || PercentualBolsaConcurso != 0 || PercentualAntecipacao != 0)
+            {
+                if (PercentualBolsaConcurso > PercentualBolsaVinculada && PercentualBolsaConcurso > PercentualBolsaConvenio && PercentualBolsaConcurso > PercentualAntecipacao)
+                {
+                    TipoBolsa = "N";
+                    venda.BolsaId = bConcurso.BolsaAlunoId;
+                    PercentualBolsa = PercentualBolsaConcurso;
+
+                }
+                else if (PercentualBolsaConvenio > PercentualBolsaVinculada && PercentualBolsaConvenio > PercentualAntecipacao)
+                {
+                    PercentualBolsa = PercentualBolsaConvenio;
+                    TipoBolsa = "C";
+                    venda.CodConvenio = convenio.Codigo;
+                    venda.ConvenioId = convenio.id;
+                    //venda.EmpresaConveniadaId = convenio.
+                }
+                else if (PercentualAntecipacao > PercentualBolsaVinculada && PercentualAntecipacao > PercentualBolsaConvenio)
+                {
+                    TipoBolsa = "C";
+                    PercentualBolsa = PercentualAntecipacao;
+                    venda.DescontoGradeId = descontogradeid;
+                    venda.TipoBolsaGrade = DescontoTipoBolsa;
+                }
+                else if ((PercentualBolsaVinculada > 0) && (PercentualBolsaVinculada >= PercentualBolsaConvenio) && (PercentualBolsaVinculada >= PercentualBolsaConcurso) && (PercentualBolsaVinculada >= PercentualAntecipacao))
+                {
+                    TipoBolsa = "B";
+                    venda.BolsaId = bolsa.BolsaAlunoId;
+                    PercentualBolsa = PercentualBolsaVinculada;
+                }
+
+                venda.PercentualDesconto = PercentualBolsa;
+                venda.TipoBolsa = TipoBolsa;
+                venda.TipoBolsaGrade = DescontoTipoBolsa;
+                return venda;
+            }
+            else
+                return venda;
+        }
+
+        private static List<DTO.Convenio> ValidaConvenio(int cursoId, int gradeId, int alunoId, int unidadeId)
+        {
+            //DataSet lista = AlunoCurriculoBLL.selectCurriculoByUnidade(alunoId, unidadeId);
+            //String listCurso = string.Empty;
+            //String listGrade = string.Empty;
+            //String listStatus = string.Empty;
+            //String listAno = string.Empty;
+            //foreach (DataRow r in lista.Tables[0].Rows)
+            //{
+            //    listCurso += r[2].ToString() + ",";
+            //    listGrade += r[9].ToString() + ",";
+            //    listStatus += r[8].ToString() + ",";
+            //    listAno += Convert.ToDateTime(r[5].ToString()).Year.ToString() + ",";
+            //}
+            //List<DTO.Convenio> convenios = BLL.ConvenioBLL.BuscarConveniosEcommerce(unidadeId, cursoId, gradeId, listCurso, listGrade, listStatus, listAno);
+            List<DTO.Convenio> convenios = BLL.ConvenioBLL.BuscarConveniosEcommerce(unidadeId, cursoId, gradeId, alunoId);
+            return convenios;
+        }
+
+        public static DTO.InscricoesVendaDTO VerificaBonificacoes(int gradeId, int unidadeId, int tipoTransmissao)
+        {
+            DTO.InscricoesVendaDTO bonificacoes = new InscricoesVendaDTO();
+
+            foreach (InscricaoVendaDTO item in listarInscricoesParentes(gradeId, unidadeId, tipoTransmissao))
+            {
+                bonificacoes.Add(item);
+            }
+
+            return bonificacoes;
+        }
+
+        //public static DTO.InscricoesVendaDTO VerificaBonificacoesWSVenda(int gradeId, int unidadeId, int tipoTransmissao)
+        //{
+        //    DTO.InscricoesVendaDTO bonificacoes = new InscricoesVendaDTO();
+
+        //    foreach (InscricaoVendaDTO item in listarInscricoesParentesWSVenda(gradeId, unidadeId, tipoTransmissao))
+        //    {
+        //        bonificacoes.Add(item);
+        //    }
+
+        //    return bonificacoes;
+        //}
+
+        private static List<DTO.InscricaoVendaDTO> listarInscricoesParentes(int gradeId, int unidadeId, int tipoTransmissao)
+        {
+            List<InscricaoVendaDTO> lista = BLL.GradesCasadasBLL.Listar(gradeId, unidadeId);
+
+            List<InscricaoVendaDTO> listaretorno = new List<InscricaoVendaDTO>();
+
+            foreach (InscricaoVendaDTO item in lista)
+            {
+                if (item.PercentualDesconto == 100)
+                {
+                    item.TipoTransmissao = tipoTransmissao;
+                    listaretorno.Add(item);
+                }
+
+            }
+            return listaretorno;
+        }
+
+        //private static List<DTO.InscricaoVendaDTO> listarInscricoesParentesWSVenda(int gradeId, int unidadeId, int tipoTransmissao)
+        //{
+        //    List<InscricaoVendaDTO> lista = BLL.GradesCasadasBLL.ListarWSVenda(gradeId, unidadeId);
+
+        //    List<InscricaoVendaDTO> listaretorno = new List<InscricaoVendaDTO>();
+
+        //    foreach (InscricaoVendaDTO item in lista)
+        //    {
+        //        if (item.PercentualDesconto == 100)
+        //        {
+        //            item.TipoTransmissao = tipoTransmissao;
+        //            listaretorno.Add(item);
+        //        }
+
+        //    }
+        //    return listaretorno;
+        //}
+
+        public static double ValorParcelaVenda(decimal valorTotal, decimal PercentualDesconto, int QtdeParcelas)
+        {
+            double valorLiquido = Convert.ToDouble(valorTotal - (valorTotal * (PercentualDesconto / 100)));
+            return valorLiquido / QtdeParcelas;
+        }
+
+        public static decimal ValorDescontoBruto(decimal ValorVendaBruto, double ValorLiquidacao)
+        {
+            return ValorVendaBruto - Convert.ToDecimal(ValorLiquidacao);
+        }
+
+        /// <summary>
+        /// Metodo responsável por buscar o valor de comissionamento (repasse) da LFG
+        /// </summary>
+        /// <param name="unidadeid"></param>
+        /// <param name="unidadeId_Identificada">Só vem preenchida se a unidadeid for LFGONLINE</param>
+        /// <param name="turmaid"></param>
+        /// <returns>
+        /// CursoOnline: Boolean que indica se o curso (unidadeid + turmaid retornam o curso) é um curso online.
+        /// Repasse_ComissaoPercentual: Valor do repasse da LFG 
+        ///         OBS: No banco (sgpUnidadeContaBCash) está salvo o valor de repasse do parceiro, 
+        ///         então esse valor precisa ser subtraido de 100 para chegar no valor da LFG
+        /// </returns>
+        public static CalculoRepasseCursoOnlineDTO CalcularRepasseCursoOnline(int unidadeid, int unidadeId_Identificada, int turmaid)
+        {
+            var ret = new CalculoRepasseCursoOnlineDTO(0, false);
+            string strTipoCursoLFGOnline = ConfigAppSettingsBLL.BuscarPorKey("TipoCursoLFGOnline");
+            int UnidadeLFGOnlineId = int.Parse(ConfigAppSettingsBLL.BuscarPorKey("UnidadeLFGOnlineId"));
+
+            if (unidadeid.Equals(UnidadeLFGOnlineId) && unidadeId_Identificada > 0 && CursoBLL.ListarCursoGradeTurma(0, 0, turmaid).Rows[0]["cursoTipo"].ToString() == strTipoCursoLFGOnline)
+            {
+                var bcash = new ContaBCashBLL().SelecionarUltimaConfiguracao(unidadeId_Identificada);
+                ret.Repasse_ComissaoPercentual = (100 - bcash.ComissaoPercentual.Value);
+                ret.CursoOnline = true;
+            }
+            return ret;
+        }
+
+        public static void CalculaRepasseVendaBalcao(int turmaId, int unidadeId, double valorTotal, double percentualDesconto, out int repasse_parcela, out double valorRepasseParceiro, int unidadeId_Identificada)
+        {
+            double valorTotalcalc = valorTotal;
+            double repassado = 0;
+            double repasse;
+
+            List<DTO.GradeUnidadeDTO> infos = GradeUnidadeBLL.SelecionarInformacoesComerciaisPorTurma(turmaId, unidadeId);
+            repasse_parcela = infos[0].Parcelas;
+
+            var CalculoCursoOnline = VendaBLL.CalcularRepasseCursoOnline(unidadeId, unidadeId_Identificada, turmaId);
+            if (CalculoCursoOnline.CursoOnline)
+            {
+                repasse = Convert.ToDouble(CalculoCursoOnline.Repasse_ComissaoPercentual);
+                valorTotalcalc -= (valorTotalcalc * (percentualDesconto / 100));
+                repassado = (valorTotalcalc * (repasse / 100));
+            }
+            else
+            {
+                repasse = Convert.ToDouble(infos[0].Repasse);
+
+                var valormaximo = Convert.ToDouble(infos[0].ValorMaximo) * repasse_parcela;
+                var valorminimo = Convert.ToDouble(infos[0].ValorMinimo) * repasse_parcela;
+                var SugeridoMax = (valormaximo / (repasse / 100));
+                var SugeridoMin = (valorminimo / (repasse / 100));
+
+                valorTotalcalc -= (valorTotalcalc * (percentualDesconto / 100));
+                double valormaximocalc = valormaximo;
+                valormaximocalc -= (valormaximocalc * (percentualDesconto / 100));
+                double valorminimocalc = valorminimo;
+                valorminimocalc -= (valorminimocalc * (percentualDesconto / 100));
+
+                repassado = (valorTotalcalc * (repasse / 100)); // repasse_parcela;
+                if (repassado >= valormaximocalc)
+                    repassado = valormaximocalc;
+                else if (repassado <= valorminimocalc)
+                    repassado = valorminimocalc;
+            }
+
+            valorRepasseParceiro = repassado;
+        }
+
+        public static void CalculaRepasseComissionamentoVendaOnline(int turmaId, int unidadeId_Curso, double valorTotal, double desconto, bool descontoTipoPercentual, bool descontoTipoValor, double comissaoTerceiro, int unidadeId_Identificada, bool unidadePropria, string ufAluno, string cidadeAluno, out int repasse_parcela, out double valorRepasseParceiro, out double valorRepasseLFG, out double valorComissionamentoBroker, out double valorDescontoBCashParceiro, int TipoPagamentoId)
+        {
+            // Parâmetro "unidadeId_Identificada" espera sempre o ID da Unidade mais próxima do Aluno
+            // Informações para cálculo de limites mínimos e máximos de Repasse para Unidade
+            List<DTO.GradeUnidadeDTO> infos = GradeUnidadeBLL.SelecionarInformacoesComerciaisPorTurma(turmaId, unidadeId_Curso);
+            if ((infos != null) && (infos.Count > 0))
+            {
+                repasse_parcela = infos[0].Parcelas;
+                //decimal repasseMinimo = infos[0].Parcelas * infos[0].ValorMinimo;
+                //decimal repasseMaximo = infos[0].Parcelas * infos[0].ValorMaximo;
+
+                // Calcula o valor de Repasse Mínimo e Repasse Máximo considerando os descontos concedidos ao Aluno
+                if (desconto != 0)
+                {
+                    // Se o Tipo de Desconto é Valor, significa que esta função já recebeu o desconto calculado. Sendo assim, será necessário efetuar uma regra para descobrir qual é o percentual de desconto.
+                    if (descontoTipoValor) desconto = ((desconto * 100) / valorTotal);
+
+                    //repasseMinimo = repasseMinimo - (repasseMinimo * (Convert.ToDecimal(desconto) / 100));
+                    //repasseMaximo = repasseMaximo - (repasseMaximo * (Convert.ToDecimal(desconto) / 100));
+                }
+
+
+                double PercentualComissionamento = (comissaoTerceiro / 100);
+
+                // Retirando desconto para o Aluno do valor total da venda.
+                double valorTotalcalc = valorTotal;
+                valorTotalcalc -= (valorTotalcalc * (desconto / 100));
+
+                // Variáveis para realização dos Cálculos e retorno nos parâmetros de saída da Função
+                double ValorDescontoBCashUnidade = 0;
+                double ValorRepasseUnidade = 0;
+                double ValorRepasseLFG = 0;
+                double ValorComissionamentoBroker = 0;
+                double ValorVendaLiquido = valorTotalcalc;
+                string TaxBcash = ConfigAppSettingsBLL.BuscarPorKey(string.Format("TaxaBcash_{0}", TipoPagamentoId.ToString()));
+                double PercentualTaxaBCash = (System.Convert.ToDouble(string.IsNullOrEmpty(TaxBcash) ? ConfigurationManager.AppSettings["valorTaxaBCash"] : TaxBcash) / 100);
+                double txBcashParceiro = 0;
+
+                Double PercentualRepasse;
+                var CalculoCursoOnline = VendaBLL.CalcularRepasseCursoOnline(unidadeId_Curso, unidadeId_Identificada, turmaId);
+                if (CalculoCursoOnline.CursoOnline)
+                    PercentualRepasse = ((100 - (Convert.ToDouble(CalculoCursoOnline.Repasse_ComissaoPercentual))) / 100);
+                else
+                    PercentualRepasse = ((100 - (System.Convert.ToDouble(infos[0].Repasse))) / 100);
+
+
+                double ValorVendaLiquidoBCash = 0;
+
+                // Regra do maximo e minimo
+                CalculaRepasseVendaBalcao(turmaId, unidadeId_Curso, valorTotal, desconto, out repasse_parcela, out valorRepasseLFG, unidadeId_Identificada);
+
+                // Repasse efetivo
+                double RepasseEfetivoLFG = valorRepasseLFG / ValorVendaLiquido;
+
+                // Verificação do Tipo de Contrato da Unidade para que os cálculos de Repasse sejam efetuados corretamente.
+                // OBS: Os cálculos só serão efetuados se algumas pré-requisitos forem atendidos.
+                Unidade unidadeIdentificada = UnidadeBLL.Selecionar(unidadeId_Identificada);
+                int unidadeContratoTipoID = unidadeIdentificada.UnidadeContratoTipoID;
+
+                // Se o parâmetro unidadeId_Identificada tem valor 0, os cálculos de Repasse para Unidade serão efetuados com base no Tipo de Contrato 1 ("Franqueado").
+                // Um dos motivos que este parâmetro pode ser 0, é a Conta B!Cash estar desabilitada no cadastro da Franquia.
+                if (unidadeId_Identificada == 0) unidadeContratoTipoID = 1;
+
+                bool efetuarCalculosRepasseUnidadeIdentificada = true;
+                /*
+                 *   [RegraCidade]:
+                 *   Se a venda é de um "Curso Online" (cursos assistidos via Internet) e o Voucher possui Comissionamento de Broker,
+                 *     Devemos verificar se a Unidade mais próxima do Aluno está na mesma cidade de residência do Aluno.
+                 *     Somente em caso positivo os cálculos de Repasse para a Unidade mais próxima do Aluno serão efetuados.
+                 *   Se a venda é de um "Curso NÃO Online" (cursos presenciais, tele-presenciais, etc...) ou o Voucher não possua Comissionamento de Broker,
+                 *     Devemos efetuar os cálculos de Repasse para a Unidade mais próxima do Aluno.
+                 */
+                bool isCursoOnline = (unidadeId_Curso == Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["UnidadeLFGOnlineId"]));
+                if (isCursoOnline && (PercentualComissionamento > 0))
+                {
+                    string ufUnidadeIdentificada = unidadeIdentificada.UF;
+                    string cidadeUnidadeIdentificada = unidadeIdentificada.Cidade;
+                    efetuarCalculosRepasseUnidadeIdentificada = ((ufUnidadeIdentificada == ufAluno) && (cidadeUnidadeIdentificada == cidadeAluno));
+                }
+
+                // Não pode efetuar Cálculo de Repasse para Unidade quando a Unidade Identificada está marcada como Própria.
+                if (unidadePropria) efetuarCalculosRepasseUnidadeIdentificada = false;
+
+                if (efetuarCalculosRepasseUnidadeIdentificada)
+                {
+                    if (PercentualRepasse > 0)
+                    {
+                        // Cálculos de acordo com o Tipo de Contrato da Unidade Identificada.
+                        if (unidadeContratoTipoID == 1 || unidadeContratoTipoID == 3) // Franqueado ou Franqueado Online
+                        {
+                            // Tipo de contrato - Modelo franqueador / franqueador online
+                            ValorComissionamentoBroker = ValorVendaLiquido * PercentualComissionamento;
+                            ValorRepasseUnidade = (ValorVendaLiquido - ValorComissionamentoBroker) * (1 - RepasseEfetivoLFG);
+                            ValorRepasseLFG = ValorVendaLiquido - ValorRepasseUnidade - ValorComissionamentoBroker;
+
+                            // Guarda valor de repasse da unidade originalmente calculado
+                            ValorDescontoBCashUnidade = ValorRepasseUnidade;
+                            // Calculos B!Cash - Modelo franqueador / franqueador online
+                            ValorVendaLiquidoBCash = ValorVendaLiquido - (ValorVendaLiquido * PercentualTaxaBCash);
+                            txBcashParceiro = ValorVendaLiquidoBCash * (PercentualTaxaBCash * (1 - RepasseEfetivoLFG));
+                            ValorRepasseUnidade = (ValorVendaLiquidoBCash - ValorComissionamentoBroker) * (1 - RepasseEfetivoLFG) + txBcashParceiro;
+                            ValorRepasseLFG = ValorVendaLiquidoBCash - ValorRepasseUnidade - ValorComissionamentoBroker;
+
+                            // Subtrai do valor de repasse da unidade original, o valor de repasse da unidade com o desconto do B!Cash.
+                            // ValorDescontoBCashUnidade passa a conter somente o valor que o B!Cash desconta do parceiro (unidade)
+                            ValorDescontoBCashUnidade -= ValorRepasseUnidade;
+                        }
+                        else if (unidadeContratoTipoID == 2) // Parceiro
+                        {
+                            // Tipo de contrato - Modelo de parceria
+                            ValorRepasseUnidade = ValorVendaLiquido * (1 - RepasseEfetivoLFG);
+                            ValorComissionamentoBroker = ValorVendaLiquido * PercentualComissionamento;
+                            ValorRepasseLFG = ValorVendaLiquido - ValorRepasseUnidade - ValorComissionamentoBroker;
+
+                            // Guarda valor de repasse da unidade originalmente calculado
+                            ValorDescontoBCashUnidade = ValorRepasseUnidade;
+
+                            // Calculos B!Cash - Modelo Parceiro
+                            ValorVendaLiquidoBCash = ValorVendaLiquido - (ValorVendaLiquido * PercentualTaxaBCash);
+                            txBcashParceiro = ValorVendaLiquidoBCash * (PercentualTaxaBCash * (1 - RepasseEfetivoLFG));
+
+                            ValorRepasseUnidade = ValorVendaLiquidoBCash * (1 - RepasseEfetivoLFG) + txBcashParceiro;
+                            ValorRepasseLFG = ValorVendaLiquidoBCash - ValorRepasseUnidade - ValorComissionamentoBroker;
+
+                            // Subtrai do valor de repasse da unidade original, o valor de repasse da unidade com o desconto do B!Cash.
+                            // ValorDescontoBCashUnidade passa a conter somente o valor que o B!Cash desconta do parceiro (unidade)
+                            ValorDescontoBCashUnidade -= ValorRepasseUnidade;
+                        }
+                        else // Tipo de Contrato inválido ou não especificado
+                        {
+                            // Não existe cálculo para este caso segundo a Especificação Funcional, por isso gera esta Exception.
+                            throw new System.Exception("Não há tipo de contrato cadastrado para a unidade " + unidadeId_Identificada.ToString() + ". A venda não poderá ser efetuada.");
+                        }
+                    }
+                    else
+                    {
+                        // Quando os Cálculos de Repasse da Unidade não forem efetuados, o Cálculo de Comissionamento do Broker deve ser feito isoladamente.
+                        if (PercentualComissionamento > 0) ValorComissionamentoBroker = ValorVendaLiquido * PercentualComissionamento;
+                        ValorRepasseLFG = ValorVendaLiquido - ValorComissionamentoBroker;
+                    }
+                }
+                else
+                {
+                    // Quando os Cálculos de Repasse da Unidade não forem efetuados, o Cálculo de Comissionamento do Broker deve ser feito isoladamente.
+                    if (PercentualComissionamento > 0) ValorComissionamentoBroker = ValorVendaLiquido * PercentualComissionamento;
+                    ValorRepasseLFG = ValorVendaLiquido - ValorComissionamentoBroker;
+                }
+
+                // Atribuição dos valores calculados aos parâmetros de saída da Função.
+                valorRepasseParceiro = ValorRepasseUnidade;
+                valorRepasseLFG = ValorRepasseLFG;
+                valorComissionamentoBroker = ValorComissionamentoBroker;
+                valorDescontoBCashParceiro = ValorDescontoBCashUnidade;
+            }
+            else
+            {
+                repasse_parcela = 0;
+                valorRepasseParceiro = 0;
+                valorRepasseLFG = 0;
+                valorComissionamentoBroker = 0;
+                valorDescontoBCashParceiro = 0;
+            }
+        }
+
+        public static void ComissaoTerceiro(int? contrato)
+        {
+            var objContratoTurmaDTO = ContratoTurmaBLL.SelecionarContratoTurma((int)contrato);
+            var objConveniacaoDTO = ConveniacaoBLL.Selecionar(objContratoTurmaDTO.ConveniacaoID);
+            var comissaoTerceiro = Convert.ToDecimal("0,00");
+
+            if (objConveniacaoDTO != null)
+            {
+                if (objConveniacaoDTO.ComissaoTerceiro != null && objConveniacaoDTO.ComissaoTerceiroReal != null)
+                {
+                    if (objConveniacaoDTO.ComissaoTerceiroReal > objConveniacaoDTO.ComissaoTerceiro)
+                    {
+                        comissaoTerceiro = (decimal)objConveniacaoDTO.ComissaoTerceiroReal;
+                    }
+                    else
+                    {
+                        comissaoTerceiro = (((decimal)objContratoTurmaDTO.valortotal * (decimal)objConveniacaoDTO.ComissaoTerceiro) / 100);
+                    }
+                }
+                else if (objConveniacaoDTO.ComissaoTerceiro != null)
+                {
+                    comissaoTerceiro = (((decimal)objContratoTurmaDTO.valortotal * (decimal)objConveniacaoDTO.ComissaoTerceiro) / 100);
+                }
+                else if (objConveniacaoDTO.ComissaoTerceiroReal != null)
+                {
+                    comissaoTerceiro = (decimal)objConveniacaoDTO.ComissaoTerceiroReal;
+                }
+                ComissaoTerceiroInsert((int)contrato, comissaoTerceiro);
+            }
+        }
+
+        private static void ComissaoTerceiroInsert(int contrato, decimal comissaoTerceiro)
+        {
+            ContratoTurmaBLL.UpdateContratoTurmaComissaoTerceiro(contrato, comissaoTerceiro);
+        }
+
+        private static void GerarTitulosRepasse(int contratoID, VendaBalcaoDTO vb)
+        {
+            //Armazena valor líquido do contrato
+            decimal valorLiquidoContrato = 0;
+            //Armazena total de repasse do contrato
+            decimal totalRepasse = 0;
+            //Qtde de Parcelas
+            int qtdParcelas = Convert.ToInt32(vb.Pagamentos.Count);
+
+            foreach (InscricaoVendaDTO i in vb.Inscricoes)
+            {
+                valorLiquidoContrato += Convert.ToDecimal(i.Valor);
+                totalRepasse += Convert.ToDecimal(i.ValorRepasse);
+            }
+
+            decimal repasseEfetivo = 0;
+            if (valorLiquidoContrato != 0)
+                repasseEfetivo = Math.Round(totalRepasse / valorLiquidoContrato, 2);
+
+            foreach (InscricaoVendaDTO insc in vb.Inscricoes)
+            {
+                if (insc.Valor > 0)
+                {
+                    decimal pesoCurso = 0;
+                    if (valorLiquidoContrato != 0)
+                        pesoCurso = Math.Round(Convert.ToDecimal(insc.Valor) / valorLiquidoContrato, 4);
+
+                    foreach (ChequeDTO p in vb.Pagamentos)
+                    {
+                        decimal percentualRepasseEfeitoParcela = p.valor * repasseEfetivo;
+                        decimal repasseEfetivoParcelaCurso = percentualRepasseEfeitoParcela * pesoCurso;
+
+                        TurmaV2DTO turma = new TurmaV2DTO();
+
+                        /* Insere o título de repasse */
+                        var conta = new ContaReceberDTO()
+                        {
+                            AlunoId = vb.AlunoID,
+                            ContratoId = contratoID,
+                            dtVencimento = p.dt_vencimento,
+                            dtCompetencia = p.dt_vencimento,
+                            Descricao = "Parcela curso: " + insc.TurmaNome,
+                            ValorLancamento = Convert.ToDouble(p.valor),
+                            vlRepasse = Convert.ToDouble(repasseEfetivoParcelaCurso)
+                                //,turmaId = TurmaSalaBLL.Obter(insc.TurmaId).TurmaId //Anteriormente a propriedade carregava o valor de TurmaSalaId O.o
+                            ,
+                            turmaId = insc.TurmaId
+                        };
+
+                        ContaReceberBLL.InserirTituloRepasse(conta);
+                    }
+                }
+            }
+        }
+
+        private static void IncluirLancamentosExtrato(int contratoId, int unidadeId, SqlTransaction Transacao, VendaBalcaoDTO vb)
+        {
+            decimal valorTotalVendaBruto = 0;
+            decimal valorTotalDescontoBruto = 0;
+            decimal valorTotalDescontoParceiro = 0;
+            decimal valorTotalVendaParceiro = 0;
+
+            foreach (InscricaoVendaDTO venda in vb.Inscricoes)
+            {
+                valorTotalVendaBruto += venda.ValorVendaBruto;
+                valorTotalDescontoBruto += venda.ValorDescontoBruto;
+                valorTotalDescontoParceiro += venda.ValorDescontoParceiro;
+                valorTotalVendaParceiro += venda.ValorVendaParceiro;
+            }
+
+            int mtarizId = GrupoEmpresaBLL.Listar(new GrupoEmpresaDTO() { grupoEmpresaId = vb.GrupoID })[0].matrizId.Value;
+            int usuarioId = vb.UsuarioID;
+
+            if (valorTotalVendaBruto != 0)
+            {
+                ExtratoLancamentoDTO lancamentoTotalBruto = new ExtratoLancamentoDTO()
+                {
+                    UnidadeId = unidadeId,
+                    MatrizId = mtarizId,
+                    ContratoId = contratoId,
+                    DetalheMovimentacaoId = DetalheMovimentacaoDTO.VENDA_TOTAL,
+                    Valor = valorTotalVendaBruto,
+                    DataCompetencia = DateTime.Now,
+                    DataMovimento = DateTime.Now,
+                    OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                    UsuarioId = usuarioId,
+                    TipoLancamentoId = TipoLancamentoDTO.DEBITO
+                };
+                ExtratoLancamentoBLL.Inserir(lancamentoTotalBruto, Transacao);
+            }
+
+            if (valorTotalDescontoBruto != 0)
+            {
+                ExtratoLancamentoDTO lancamentoTotalDesconto = new ExtratoLancamentoDTO()
+                {
+                    UnidadeId = unidadeId,
+                    MatrizId = mtarizId,
+                    ContratoId = contratoId,
+                    DetalheMovimentacaoId = DetalheMovimentacaoDTO.DESCONTO_TOTAL,
+                    Valor = valorTotalDescontoBruto,
+                    DataCompetencia = DateTime.Now,
+                    DataMovimento = DateTime.Now,
+                    OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                    UsuarioId = usuarioId,
+                    TipoLancamentoId = TipoLancamentoDTO.CREDITO
+                };
+                ExtratoLancamentoBLL.Inserir(lancamentoTotalDesconto, Transacao);
+            }
+
+            DTO.Unidade u = UnidadeBLL.Selecionar(unidadeId);
+
+            if (valorTotalVendaParceiro != 0 && !u.IsUnidadePropria)
+            {
+                ExtratoLancamentoDTO lancamentoValorParceiro = new ExtratoLancamentoDTO()
+                {
+                    UnidadeId = unidadeId,
+                    MatrizId = mtarizId,
+                    ContratoId = contratoId,
+                    DetalheMovimentacaoId = DetalheMovimentacaoDTO.PARTE_PARCEIRO,
+                    Valor = valorTotalVendaParceiro,
+                    DataCompetencia = DateTime.Now,
+                    DataMovimento = DateTime.Now,
+                    OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                    UsuarioId = usuarioId,
+                    TipoLancamentoId = TipoLancamentoDTO.CREDITO
+                };
+                ExtratoLancamentoBLL.Inserir(lancamentoValorParceiro, Transacao);
+            }
+
+            if (valorTotalDescontoParceiro != 0 && !u.IsUnidadePropria)
+            {
+                ExtratoLancamentoDTO lancamentoDescontoParceiro = new ExtratoLancamentoDTO()
+                {
+                    UnidadeId = unidadeId,
+                    MatrizId = mtarizId,
+                    ContratoId = contratoId,
+                    DetalheMovimentacaoId = DetalheMovimentacaoDTO.DESCONTO_PARCEIRO,
+                    Valor = valorTotalDescontoParceiro,
+                    DataCompetencia = DateTime.Now,
+                    DataMovimento = DateTime.Now,
+                    OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                    UsuarioId = usuarioId,
+                    TipoLancamentoId = TipoLancamentoDTO.DEBITO
+                };
+                ExtratoLancamentoBLL.Inserir(lancamentoDescontoParceiro, Transacao);
+            }
+        }
+
+        private static void concluirMudancaCurso(SqlTransaction transacao, VendaBalcaoDTO vb)
+        {
+            LancarCreditoCustodiaMudancaCurso(transacao, vb.CancelamentoID, vb);
+            ConcluirCancelamento(transacao, vb);
+            CancelamentoBLL.ConcluirBonificacoes(vb.CancelamentoID);
+        }
+
+        private static void ConcluirCancelamento(SqlTransaction transacao, VendaBalcaoDTO vb)
+        {
+            CancelamentoBLL cancelamentoBll = new CancelamentoBLL();
+            cancelamentoBll.Concluir(vb.CancelamentoID);
+            //BLL.CancelamentoBLL.LancarOcorrencia(cancelamentoId, Convert.ToInt32(Session["usuarioId"]));
+            //CancelamentoDTO cancelamento = cancelamentoBll.Obter(cancelamentoId);
+            BLL.CancelamentoBLL.LancarOcorrencia(BLL.ContratoPagamentoBLL.StatusCancelamento(vb.CancelamentoID), transacao, vb.UsuarioID);
+
+
+            double valorRestante = ((double)vb.CreditoCancelamento) - vb.ValorTotalComCredito;
+            if (valorRestante > 0)
+            {
+                RestituicaoBLL restituicaoBll = new RestituicaoBLL();
+                restituicaoBll.SalvarRestante(vb.CancelamentoID, valorRestante);
+            }
+            else if (vb.ErroDeVenda)
+            {
+                RestituicaoBLL restituicaoBll = new RestituicaoBLL();
+                restituicaoBll.SalvarRestante(vb.CancelamentoID, 0);
+            }
+        }
+
+        private static void LancarCreditoCustodiaMudancaCurso(SqlTransaction transacao, int cancelamentoId, VendaBalcaoDTO vb)
+        {
+            //DataTable dtCalculos = CustodiaCondicaoBLL.CalculoCreditoMudancaCurso(cancelamentoId);
+            DataTable dtCalculos = CustodiaCondicaoBLL.CalculoCreditoMudancaCurso(cancelamentoId, System.Convert.ToDecimal(vb.ValorTotal));
+
+            if (dtCalculos.Rows.Count > 0)
+            {
+                int statusContrato = int.Parse(dtCalculos.Rows[0]["Status"].ToString());
+                int contratoId = int.Parse(dtCalculos.Rows[0]["contratoId"].ToString());
+                decimal creditoMudancaCurso = decimal.Parse(dtCalculos.Rows[0]["creditoMudancaCurso"].ToString());
+                int unidadeId = int.Parse(dtCalculos.Rows[0]["unidadeId"].ToString());
+                int grupoId = int.Parse(dtCalculos.Rows[0]["grupoId"].ToString());
+
+                if ((statusContrato == 1) || (statusContrato == 4))
+                {
+                    GrupoEmpresaDTO grupoempresa = BLL.GrupoEmpresaBLL.Listar(new DTO.GrupoEmpresaDTO() { grupoEmpresaId = grupoId }).FirstOrDefault();
+
+                    ExtratoLancamentoDTO elCredito = new ExtratoLancamentoDTO();
+
+                    elCredito.NumeroDocumento = contratoId;
+                    elCredito.TipoMovimentacaoId = TipoMovimentacaoDTO.CANCELAMENTO;
+                    elCredito.Justificativa = "Crédito Mudança de Curso";
+                    elCredito.DetalheMovimentacaoId = DetalheMovimentacaoDTO.CREDITO_MUDANCA_CURSO;
+                    elCredito.DataMovimento = DateTime.Now;
+                    elCredito.DataCompetencia = DateTime.Now;
+                    elCredito.TipoLancamentoId = TipoLancamentoDTO.CREDITO;
+                    elCredito.Valor = creditoMudancaCurso;
+                    elCredito.Transferencia = false;
+                    elCredito.Estorno = false;
+                    elCredito.UsuarioId = Convert.ToInt32(vb.UsuarioID);
+                    elCredito.OrigemLancamentoId = OrigemLancamentoDTO.CANCELAMENTO;
+                    elCredito.ContratoId = contratoId;
+                    elCredito.CancelamentoId = cancelamentoId;
+                    elCredito.MatrizId = (int)grupoempresa.matrizId;
+                    elCredito.UnidadeId = unidadeId;
+
+                    long extratoLancamentoId = BLL.ExtratoLancamentoBLL.Inserir(elCredito, transacao);
+
+                    DTO.Credito creditoCustodia = new DTO.Credito();
+
+                    creditoCustodia.ContratoId = contratoId;
+                    creditoCustodia.Tipo = (int)DTO.Credito.TipoAcerto.Custodia;
+                    creditoCustodia.Valor = (double)creditoMudancaCurso;
+                    creditoCustodia.IsBaixado = false;
+                    creditoCustodia.UsuarioId = Convert.ToInt32(vb.UsuarioID); ;
+                    creditoCustodia.UnidadeId = unidadeId;
+                    creditoCustodia.IsAlteravel = true;
+                    creditoCustodia.ExtratoLancamentoId = extratoLancamentoId;
+                    creditoCustodia.EmpresaId = (int)grupoempresa.matrizId;
+
+                    BLL.CreditoBLL.LancamentoViaMudancaCurso(creditoCustodia, statusContrato, transacao);
+                }
+            }
+        }
+
+        private static void concluirErroDeVenda(int contratoVelho, int contratoNovo, SqlTransaction transacao, VendaBalcaoDTO vb)
+        {
+            //Não Mudar ordem
+            ContratoBLL.TransferirStatus(contratoVelho, contratoNovo, vb.CancelamentoID);
+            ConcluirCancelamento(transacao, vb);
+            ContratoBLL.TransferirPagamentos(contratoVelho, contratoNovo);
+            RestituicaoBLL.CorrigirRestituicaoErroVenda(contratoVelho, contratoNovo, vb.CancelamentoID);
+            CancelamentoBLL.ConcluirBonificacoes(vb.CancelamentoID);
+
+            //Estorno da venda anterior
+            BLL.CancelamentoBLL cancelamentoBLL = new BLL.CancelamentoBLL();
+            BLL.EstornoDeVendaBLL.Estornar(contratoVelho, cancelamentoBLL.Obter(vb.CancelamentoID).TurmaId, vb.UsuarioID);
+        }
+
+        private static string GerarFaturas(GridView dgvParcelas, int contratoId, SqlTransaction tran, VendaBalcaoDTO vb)
+        {
+            try
+            {
+                int unidadeId = vb.UnidadeSelecionadaID;
+                int cursoId = Convert.ToInt32(vb.CursoID.Split('|')[0]);
+                int grupoEmpresaId = CursoBLL.Recuperar(cursoId).GrupoId;
+
+                int aplicacaoSolicitanteId = 0;
+                if (grupoEmpresaId == DTO.GrupoEmpresaDTO.PRAETORIUM)
+                    aplicacaoSolicitanteId = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["FinanceiroPraetorium.AplicacaoSolicitanteId"].ToString());
+                else if (grupoEmpresaId == DTO.GrupoEmpresaDTO.UNIDERP_PRAETORIUM)
+                    aplicacaoSolicitanteId = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["FinanceiroUniderpPraetorium.AplicacaoSolicitanteId"].ToString());
+                else if (vb.IsUnidadeInterativa)
+                    aplicacaoSolicitanteId = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["UnidadeInterativa.AplicacaoSolicitanteId"].ToString());
+
+                string urlFirst = String.Empty;
+
+                List<DTO.Pagamento> contratopagamentoList = ContratoPagamentoBLL.List(contratoId); //Lista com os IDs do ContratoPagamento
+                int index = 0;
+
+                foreach (GridViewRow r in dgvParcelas.Rows)
+                {
+                    if (r.Cells[0].Text.ToUpper().Equals("BOLETO"))
+                    {
+                        DTO.FaturaDTO f = new DTO.FaturaDTO();
+                        f.UnidadeId = unidadeId;
+                        f.GrupoEmpresaId = grupoEmpresaId;
+                        f.TipoFaturaId = DTO.TipoFaturaDTO.TIPOFATURA_VENDA_DIRETA;
+                        f.DataVencimento = Convert.ToDateTime(r.Cells[1].Text + " 23:59:59");
+                        f.DataFechamento = Convert.ToDateTime(r.Cells[1].Text);
+                        f.DataFaturamento = Convert.ToDateTime(r.Cells[1].Text);
+                        if (f.DataVencimento < DateTime.Now.Date)
+                            f.StatusFaturaId = DTO.StatusFaturaDTO.VENCIDA;
+                        else
+                            f.StatusFaturaId = DTO.StatusFaturaDTO.AGUARDANDO_PAGAMENTO;
+
+                        f.ValorOriginal = Convert.ToDecimal(r.Cells[2].Text.Replace("R$ ", String.Empty));
+                        f.ValorPago = null;
+                        f.DataPagamento = null;
+
+                        int faturaId = FaturaBLL.Inserir(f, tran);
+
+                        string numeroDoc = FaturaBoletoBLL.GerarNumeroDocumento(aplicacaoSolicitanteId);
+
+                        //Inserir Vínculo entre Fatura e Título de Repasse
+                        FaturaBLL.InserirTituloRepasse(faturaId, contratopagamentoList[index].Id, tran);
+                        index++;
+
+                        if (String.IsNullOrEmpty(urlFirst))
+                            urlFirst = GerarBoleto(faturaId, numeroDoc, (decimal)f.ValorOriginal, f.DataVencimento, aplicacaoSolicitanteId, tran, vb);
+                        else
+                            GerarBoleto(faturaId, numeroDoc, (decimal)f.ValorOriginal, f.DataVencimento, aplicacaoSolicitanteId, tran, vb);
+                    }
+                }
+
+                return urlFirst;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static string GerarBoleto(int faturaId, string numeroDoc, decimal valorBoleto, DateTime vencimentoBoleto, int aplicacaoSolicitanteId, SqlTransaction tran, VendaBalcaoDTO vb)
+        {
+            DTO.FaturaDTO f = new DTO.FaturaDTO();
+            f.FaturaId = faturaId;
+            f = FaturaBLL.Retrieve(f, tran).FirstOrDefault();
+
+            if (f != null)
+            {
+                /* Dados da Aplicação */
+                string numeroDocumento = numeroDoc;
+                string aplicacaoSolicitante = aplicacaoSolicitanteId.ToString();
+                string valor = valorBoleto.ToString("N2");
+                string vencimento = vencimentoBoleto.ToString("dd/MM/yyyy HH:mm:ss");
+                decimal valorFatura = (decimal)f.ValorOriginal;
+                string instrucao = "Após Vencimento: Multa(2%) = R$" + (valorFatura * (decimal)0.02).ToString("N2") + ". Juros(0,033%) = R$" + (valorFatura * (decimal)0.00033).ToString("N2") + "/dia.<br/>Você poderá imprimir boletos referentes as demais parcelas do curso acessando a área do aluno.";
+
+                /* Dados do Cedente */
+                string nome = String.Empty;
+                string rua = String.Empty;
+                string bairro = String.Empty;
+                string cidade = String.Empty;
+                string uf = String.Empty;
+                string cep = String.Empty;
+
+                DAO.Entity.Aluno a = new DAO.Entity.Aluno();
+                a = BLL.AlunoBLL.Selecionar(vb.AlunoID);
+
+                if (a != null)
+                {
+                    nome = a.Nome;
+                    rua = a.Endereco;
+                    bairro = a.EndBairro;
+                    cidade = a.EndCidade;
+                    uf = a.EndUF;
+                    cep = Utilitarios.Util.FormatarCEP(a.Cep);
+
+                }
+
+                string[] dadosAplicacao = { numeroDocumento, aplicacaoSolicitante, valor, vencimento, instrucao, "ST" };
+                string[] dadosSacado = { nome, rua, bairro, cidade, uf, cep };
+                bool jaImprimiu;
+                bool vencido = false;
+
+                string url;
+                /*VERIFICAR*/
+                WS_GeradorBoleto.BoletoServiceSoapClient bs = new WS_GeradorBoleto.BoletoServiceSoapClient();
+                if (vb.IsUnidadeInterativa)
+                {
+                    DTO.GradePoliticaComercialDTO gpc = BLL.GradePoliticaComercialBLL.ObterPorFaturaId(faturaId, tran);
+                    if (gpc.ConcederDescontoPontualidade)
+                    {
+                        var valorComDesconto = (valorBoleto * ((gpc.PercentualDesconto ?? 0) / (decimal)100.0));
+
+                        WS_GeradorBoleto.ArrayOfString dadosApli = new WS_GeradorBoleto.ArrayOfString();
+                        dadosApli.AddRange(dadosAplicacao);
+
+                        WS_GeradorBoleto.ArrayOfString dadosSaca = new WS_GeradorBoleto.ArrayOfString();
+                        dadosSaca.AddRange(dadosSacado);
+
+                        url = bs.GerarBoletoPontualidade(dadosApli, dadosSaca, gpc.DiasAntecipacao ?? 0, valorComDesconto, out jaImprimiu, out vencido);
+                    }
+                    else
+                    {
+                        WS_GeradorBoleto.ArrayOfString dadosApli = new WS_GeradorBoleto.ArrayOfString();
+                        dadosApli.AddRange(dadosAplicacao);
+
+                        WS_GeradorBoleto.ArrayOfString dadosSaca = new WS_GeradorBoleto.ArrayOfString();
+                        dadosSaca.AddRange(dadosSacado);
+
+                        url = bs.GerarBoleto(dadosApli, dadosSaca, out jaImprimiu, out vencido);
+                    }
+                }
+                else
+                {
+                    WS_GeradorBoleto.ArrayOfString dadosApli = new WS_GeradorBoleto.ArrayOfString();
+                    dadosApli.AddRange(dadosAplicacao);
+
+                    WS_GeradorBoleto.ArrayOfString dadosSaca = new WS_GeradorBoleto.ArrayOfString();
+                    dadosSaca.AddRange(dadosSacado);
+
+                    url = bs.GerarBoleto(dadosApli, dadosSaca, out jaImprimiu, out vencido);
+                }
+
+                if (!jaImprimiu)
+                {
+                    DTO.BoletoDTO b = new DTO.BoletoDTO();
+                    b = BoletoBLL.Recuperar(Convert.ToInt32(aplicacaoSolicitante), Convert.ToInt64(numeroDocumento));
+                    string nossoNumero = b.NossoNumero;
+
+                    FaturaBoletoBLL.Inserir(faturaId, DateTime.Now, nossoNumero, tran);
+                }
+                return url;
+            }
+
+            return String.Empty;
+        }
+
+        private static void BindPagamento(VendaBalcaoDTO vb, ref Label lblPagamentosQuantidade, ref GridView gvpagamentos)
+        {
+            if (vb.Pagamentos != null)
+                lblPagamentosQuantidade.Text = Mensagem.ObterNumeroRegistros(vb.Pagamentos.Count);
+            gvpagamentos.DataSource = vb.Pagamentos;
+            //gvpagamentos.Sort("dt_vencimento", SortDirection.Ascending);
+            gvpagamentos.DataBind();
+        }
+
+        #region VendaBCash
+
+        public static RemotePost FinalizarVendaComBCash(ChequesDTO pagamentos, VendaBCashDTO vb, BLL.VendaBLL.TipoRepasse tipoRepasse, int? origemVenda)
+        {
+
+            SVOPedidoDAL clsSVOPedidoDAL = new SVOPedidoDAL();
+
+            RemotePost svo = new RemotePost();
+
+            try
+            {
+
+                PedidoParametroBCashPost ppb = new PedidoParametroBCashPost();
+
+                PedidoDTO p = null;
+
+                using (Transaction t = new Transaction())
+                {
+                    UnidadeContaBCashDTO ucb;
+
+                    //Alterado para fazer com que o sistema não re-identifique a unidade.
+                    if (vb.UnidadeId_Identificada.Equals(0))
+                    {
+                        ucb = IdentificarUnidade(vb);
+                    }
+                    else
+                    {
+                        ucb = new BCashBO().IdentificarUnidade(vb.UnidadeId_Identificada);
+                    }
+                    bool descontoEmPercentual = vb.DescontoTipoPercentual ? vb.DescontoTipoPercentual : false;
+                    var tipoPagamento = (TipoPagamentoDTO.TipoPagamentoBcash)Enum.Parse(typeof(TipoPagamentoDTO.TipoPagamentoBcash), vb.TipoPagamento);
+
+                    CalculoRepasseDTO cr = CalculaRepasse(Convert.ToDecimal(vb.ValorTotal), vb.UnidadeID, vb.UnidadeId_Identificada, vb.TurmaId, tipoPagamento, Convert.ToDecimal(vb.ValorDesconto), descontoEmPercentual, null);
+
+                    //CalculoRepasseDTO cr = CalculaRepasse2(ref vb, tipoRepasse, ucb);
+                    vb.ValorDescontoBCashParceiro = System.Convert.ToDecimal((cr.ValorDescontoBCashParceiro > 0 ? cr.ValorDescontoBCashParceiro : 0));
+
+                    p = CriarPedido(ucb, vb);
+                    svo.PedidoId = p.ID.ToString();
+
+                    p.ValorRepasseParceiro = System.Convert.ToDecimal(cr.ValorRepasseParceiro);
+
+                    System.Decimal dblValorParcela = CalcularValorParcelas(System.Convert.ToDecimal(p.ValorTotal), p.Parcela, 1);
+                    ppb = GravarLogPostBCash(dblValorParcela, p, ucb, cr, vb, 1, null);
+
+                    SalvarDadosAluno(vb);
+
+                    //SalvarBonificacoes(vb);
+
+                    int _contratoID = 0;
+                    if (p.ContratoID != null)
+                        _contratoID = (int)p.ContratoID;
+
+                    if (vb.VoucherValido && vb.Voucher != "") //verificar vb.consomevoucher - svo utiliza porém sga não consta na tela de vendacurso_novo !!! 
+                    {
+                        ConsumirVoucher(vb.Voucher, _contratoID);
+                    }
+
+                    t.Commit();
+                }
+
+                svo = EfetuarPostBCash(ppb, vb, 1, null);
+
+                if (!string.IsNullOrEmpty(svo.Erro))
+                {
+                    clsSVOPedidoDAL.AtualizarPedido(p.ID, false, 5);
+                    clsSVOPedidoDAL.RegistrarLogPostBCashExcecao(System.Convert.ToInt32(svo.PedidoId), vb.Aluno.Cpf, svo.Erro, null);
+                }
+                else
+                {
+                    if (p != null)
+                    {
+                        // Regra para pagamento tipo "B!Cash - Boleto à vista" (ID = 23) e boleto Parcelado (ID = 24)
+                        // Indicar que a bolsa está sendo utilizada até a mudança de status do pedido.
+                        if (p.TipoPagamento == DTO.TipoPagamentoDTO.BcashBoleto || p.TipoPagamento == DTO.TipoPagamentoDTO.BcashBoletoParcelado)
+                        {
+                            foreach (DTO.InscricaoVendaDTO inscricao in vb.inscricoes)
+                                if (inscricao.BolsaId != 0) BolsaAlunoBLL.AtualizarBolsaAlunoAguardandoContrato(System.Convert.ToInt32(inscricao.BolsaId), true);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                svo.Erro = ex.ToString();
+                svo.CategoriaErro = "Generic";
+                clsSVOPedidoDAL.RegistrarLogPostBCashExcecao(string.IsNullOrEmpty(svo.PedidoId) ? 0 : Convert.ToInt32(svo.PedidoId), vb.Aluno.Cpf, svo.Erro, null);
+                //Erro.Tratar(ex);
+            }
+
+            return svo;
+        }
+
+        public static UnidadeContaBCashDTO IdentificarUnidade(VendaBCashDTO vb)
+        {
+            UnidadeContaBCashDTO ucb = new UnidadeContaBCashDTO();
+
+            if (vb.isLFGOnline)
+            {
+                ucb = new BCashBO().IdentificarUnidade(vb.Aluno.Endereco, vb.Aluno.EndNumero, vb.Aluno.EndCidade, vb.Aluno.EndUF, vb.Aluno.Cep);
+            }
+            else
+            {
+                ucb = new BCashBO().IdentificarUnidade(vb.UnidadeID);
+            }
+
+            return ucb;
+        }
+
+        private static PedidoDTO CriarPedido(UnidadeContaBCashDTO ucb, VendaBCashDTO vb)
+        {
+            PedidoDTO p = new PedidoDTO();
+            p.AlunoCPF = vb.Aluno.Cpf;
+            p.TurmaID = vb.TurmaId;
+            p.UnidadeID = vb.UnidadeID;
+            p.CursoNome = vb.Turma.CursoNome;
+            p.GradeID = vb.GradeID;
+            p.CursoID = vb.CursoID;
+
+            if (vb.UnidadeID != 0)
+            {
+                UnidadesBLL unidades = ObterUnidade(vb.CursoID, vb.TipoUnidadeId, vb.MatrizId);
+                Unidade und = unidades.ListaUnidades.ToList().Find(i => i.Id == vb.UnidadeID);
+
+                p.UnidadeNome = und.Nome;
+            }
+
+            CursoDTO cursoSelecionado = new CursoDTO(); // verificar cursos.ListaCursos.Where(i => i.ID == vb.CursoID).First();
+
+            p.ValorBruto = Convert.ToDecimal(vb.ValorTotal);
+            p.ValorDesconto = Convert.ToDecimal(vb.ValorDesconto);
+            p.PercentualDesconto = Convert.ToDecimal(vb.PercentualDesconto);
+            p.DataCriacao = DateTime.Now;
+            p.StatusID = PedidoStatusDTO.AGUARDANDO_PAGAMENTO;
+            p.DataStatus = DateTime.Now;
+            p.UnidadeRepasseID = 0; //ucb.UnidadeID;
+            p.BolsaAlunoID = vb.inscricoes[0].BolsaId;
+            p.TipoBolsa = vb.inscricoes[0].TipoBolsa;
+            p.UsuarioID = vb.UsuarioID;
+            p.ChamadaWS = false;
+            p.EmpresaID = cursoSelecionado.EmpresaId;
+            p.Origem = PedidoOrigemDTO.ORIGEM_SGA;
+            p.Parcela = vb.Parcela;
+            p.TipoPagamento = Convert.ToInt32(vb.TipoPagamento);
+            p.EmpresaID = vb.GrupoID;
+            p.DescontoGradeId = vb.inscricoes[0].DescontoGradeId;
+
+            if (vb.Voucher != null)
+            {
+                p.Voucher = vb.Voucher;
+            }
+            else
+            {
+                p.Voucher = "";
+            }
+
+            //Inserir Pedido
+            PedidoBLL pbo = new PedidoBLL();
+            p.ID = BCashBO.InserirPedido(p);
+
+            try
+            {
+                // Inserir cursos do pedido
+                new SVOPedidoDAL().InserirPedidoCurso(p, vb.inscricoes);
+            }
+            catch (System.Exception ex)
+            {
+                new SVOPedidoDAL().RegistrarLogPostBCashExcecao(System.Convert.ToInt32(p.ID), vb.Aluno.Cpf, ex.Message, null);
+                throw ex;
+            }
+
+            PedidoLogStatus pls = new PedidoLogStatus();
+            pls.PedidoID = p.ID;
+            pls.StatusID = p.StatusID;
+            pls.DataStatus = p.DataStatus;
+
+            //Inserir Log de Status do Pedido
+            new BCashBO().InserirPedidoLogStatus(pls);
+
+            return p;
+        }
+
+
+      
+        public static PedidoParametroBCashPost GravarLogPostBCash(System.Decimal decValorParcela, PedidoDTO p, UnidadeContaBCashDTO ucb, CalculoRepasseDTO cr, VendaBCashDTO vb, System.Int32 intParcelaAtual, System.Data.SqlClient.SqlTransaction Transacao)
+        {
+
+            int intMatrizID = GrupoEmpresaBLL.Listar(new GrupoEmpresaDTO() { grupoEmpresaId = vb.GrupoID })[0].matrizId.Value;
+
+            SVOContaBCashDAL clsSVOContaBCashDAL = new SVOContaBCashDAL();
+            clsSVOContaBCashDAL.Obter(System.Convert.ToInt32(intMatrizID));
+            System.String strSellerMail = clsSVOContaBCashDAL.Email;
+
+            if (strSellerMail != "")
+            {
+                PedidoParametroBCashPost ppb = new PedidoParametroBCashPost();
+
+                System.Double dblRepasseParceiro = System.Convert.ToDouble(p.ValorRepasseParceiro);
+                System.Double dblValor = System.Convert.ToDouble((vb.ValorTotal - vb.ValorDesconto));
+                //if (p.Origem == 2) dblValor += System.Convert.ToDouble(p.ValorDesconto);
+
+                ppb.UrlRetorno = Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCash"]);
+                if (p.TipoPagamento == 24)
+                {
+                    dblValor = System.Convert.ToDouble(decValorParcela);
+                    dblRepasseParceiro = System.Convert.ToDouble(CalcularValorParcelas(System.Convert.ToDecimal(dblRepasseParceiro), p.Parcela, intParcelaAtual));
+                    if (intParcelaAtual >= 2) ppb.UrlRetorno = Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCashSGA"]);
+                }
+
+
+                return VendaBLL.MontaProduto(ppb, strSellerMail, p, vb, ucb, intParcelaAtual, Transacao, dblValor, dblRepasseParceiro);
+            }
+            else
+                throw new Exception("Conta B!Cash não configurada para essa matriz. Favor verificar!");
+        }
+
+        public static PedidoParametroBCashPost GravarLogPostBCashCancelamentoBoletoParcelado(System.Decimal decValorParcela, PedidoDTO p, UnidadeContaBCashDTO ucb, CalculoRepasseDTO cr, VendaBCashDTO vb, System.Int32 intParcelaAtual, System.Data.SqlClient.SqlTransaction Transacao)
+        {
+            int intMatrizID = GrupoEmpresaBLL.Listar(new GrupoEmpresaDTO() { grupoEmpresaId = vb.GrupoID })[0].matrizId.Value;
+
+            SVOContaBCashDAL clsSVOContaBCashDAL = new SVOContaBCashDAL();
+            clsSVOContaBCashDAL.Obter(System.Convert.ToInt32(intMatrizID));
+            System.String strSellerMail = clsSVOContaBCashDAL.Email;
+
+            if (strSellerMail != "")
+            {
+                PedidoParametroBCashPost ppb = new PedidoParametroBCashPost();
+                System.Double dblRepasseParceiro = System.Convert.ToDouble(p.ValorRepasseParceiro);
+                ppb.UrlRetorno = Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCash"]);
+                System.Double dblValor = System.Convert.ToDouble(decValorParcela);
+                if (intParcelaAtual >= 2) ppb.UrlRetorno = Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCashSGA"]);
+
+                return VendaBLL.MontaProduto(ppb, strSellerMail, p, vb, ucb, intParcelaAtual, Transacao, dblValor, dblRepasseParceiro);
+            }
+            else
+                throw new Exception("Conta B!Cash não configurada para essa matriz. Favor verificar!");
+        }
+
+        private static PedidoParametroBCashPost MontaProduto(PedidoParametroBCashPost ppb, System.String EmailLoja, PedidoDTO p, VendaBCashDTO vb, UnidadeContaBCashDTO ucb, System.Int32 intParcelaAtual, System.Data.SqlClient.SqlTransaction Transacao, Double dblValor, Double dblRepasseParceiro)
+        {
+
+            ppb.EmailLoja = EmailLoja;
+            ppb.ProdutoCodigo1 = vb.TurmaId.ToString();
+            ppb.ProdutoDescricao1 = HttpUtility.UrlEncode((vb.Turma.CursoNome + " - " + vb.Turma.GradeDescricao + " - " + vb.Turma.TurmaNome).Replace("'", "").Replace("/", "-").Replace("+", " ").Replace("*", "").Replace("(", "").Replace(")", "").Replace("*", "").Replace("@", "").Replace("#", "").Replace("$", "").Replace("%", "").Replace("&", ""), Encoding.GetEncoding(28597)).Replace("+", " ");
+            ppb.ProdutoQtde1 = 1;
+            ppb.ProdutoValor1 = Convert.ToDecimal(dblValor.ToString("N2"));
+            ppb.TipoIntegracao = "PAD";
+            ppb.Frete = 0;
+            ppb.PedidoID = Convert.ToInt32(p.ID);
+            ppb.Email = vb.Aluno.Email;
+            ppb.Nome = HttpUtility.UrlEncode(vb.Aluno.Nome.Replace("'", "").Replace("/", "-").Replace("+", " ").Replace("*", "").Replace("(", "").Replace(")", "").Replace("*", "").Replace("@", "").Replace("#", "").Replace("$", "").Replace("%", "").Replace("&", ""), Encoding.GetEncoding(28597)).Replace("+", " ");
+            ppb.UrlAviso = String.Empty;
+            ppb.Redirect = "true";
+            ppb.DataEnvio = DateTime.Now;
+            ppb.ParcelaMaxima = vb.Turma.QtdMaximaParcelas.ToString();
+            ppb.TempoRedirecionamento = "20";
+            ppb.CPF = vb.Aluno.Cpf;
+            ppb.Telefone = string.Concat(vb.Aluno.TelResddd, vb.Aluno.TelResNum);
+            ppb.DataVencimento = vb.DataVencimento;
+
+            if (ucb.UnidadeID != 0 && dblRepasseParceiro > 0)
+            {
+                ppb.EmailDependente1 = ucb.EmailBCash;
+                ppb.ValorDependente1 = Convert.ToDecimal(dblRepasseParceiro.ToString("N2"));
+
+                vb.EmailParceiro = ucb.EmailBCash;
+                vb.ValorRepasse = Convert.ToDecimal(dblRepasseParceiro);
+            }
+
+            //Verificar se é necessário
+            //ppb.Hash = GerarHash(ppb, contabcash.Token);
+
+
+            //Inserir Parâmetros do POST
+            new BCashBO().InserirPedidoParametroBCashPostBO(ppb, intParcelaAtual, Transacao);
+
+            PedidoParametroBCashPostLog ppl = new PedidoParametroBCashPostLog();
+            ppl.PedidoID = ppb.PedidoID;
+            ppl.DataEnvio = ppb.DataEnvio;
+
+            //Inserir Log de POST
+            new BCashBO().InserirPedidoParametroBCashPostLogBO(ppl, intParcelaAtual, Transacao);
+
+            vb.PedidoID = Convert.ToInt32(p.ID);
+
+            return ppb;
+        }
+
+        private static void SalvarDadosAluno(VendaBCashDTO Dados)
+        {
+            CadastroAlunoDTO ca = new CadastroAlunoDTO();
+            ca.Bairro = Dados.Aluno.EndBairro;
+            ca.Cep = Dados.Aluno.Cep;
+            if (Dados.Aluno.EndCidade.Length > 30)
+                ca.Cidade = Dados.Aluno.EndCidade.Substring(0, 30);
+            else
+                ca.Cidade = Dados.Aluno.EndCidade;
+            ca.Complemento = Dados.Aluno.EndComplemento;
+            ca.CPF = Dados.Aluno.Cpf;
+            ca.DataNascimento = Dados.Aluno.DtNascimento;
+            ca.Email = Dados.Aluno.Email;
+            ca.EstadoCivil = Dados.Aluno.EstadoCivil;
+            ca.Logradouro = Dados.Aluno.Endereco;
+            ca.Nome = Dados.Aluno.Nome;
+            ca.Numero = Dados.Aluno.EndNumero;
+            ca.OrigemId = Dados.Aluno.OrigemId;
+            ca.PedidoID = Dados.PedidoID;
+            ca.RG = Dados.Aluno.RG;
+            ca.Sexo = Dados.Aluno.Sexo.ToString();
+            ca.TelCelDdd = Dados.Aluno.Celddd;
+            ca.TelCelNum = Dados.Aluno.CelNum;
+            ca.TelCmlDdd = Dados.Aluno.TelCmlddd;
+            ca.TelCmlNum = Dados.Aluno.TelCmlNum;
+            ca.TelCmlRamal = Dados.Aluno.TelCmlramal;
+            ca.TelResDdd = Dados.Aluno.TelResddd;
+            ca.TelResNum = Dados.Aluno.TelResNum;
+            ca.UF = Dados.Aluno.EndUF;
+
+            //new CadastroAlunoBO().Inserir(ca);
+            new BCashBO().InserirCadastroAlunoBO(ca);
+        }
+
+        private static void SalvarBonificacoes(VendaBCashDTO vb)
+        {
+            // new BCashBO().InserirInscricaoBonificacao(ConverterInscricoes(vb.inscricoes));
+        }
+
+        //private static List<InscricaoBonificacaoDTO> ConverterInscricoes(InscricaoVendaDTO inscricoes) { }
+        //{
+
+        //    var list = new List<InscricaoBonificacaoDTO>();
+        //    foreach (var b in inscricoes)
+        //        list.Add(new InscricaoBonificacaoDTO
+        //        {
+        //            TurmaID =  b.TurmaId,
+        //            GradeID = b.GradeId,
+        //            CursoID = b.CursoId,
+        //            TransmissaoTipoID = 2,
+        //            QtdParcelas = b.ParcelaRepasse,
+        //            ValorVenda = b.ValorVendaBruto,
+        //            DataInscricao = b.DataInscricao,
+        //            PercentualBolsista = b.PercentualDesconto,
+        //            BolsaID = b.BolsaId,
+        //            TipoBolsa = b.TipoBolsa,
+        //            ValorVendaBruto = b.ValorVendaBruto
+        //        });
+
+        //    return list;
+        //}
+
+        public static void ConsumirVoucher(string numeroVoucher, int contratoid)
+        {
+            //Consome o voucher sendo SIMPLES ou MULTIPLO
+            VoucherBLL.ConsomeVoucher(numeroVoucher, contratoid);
+            VoucherMultiploBLL.ConsomeVoucher(numeroVoucher, contratoid);
+        }
+
+        public static RemotePost EfetuarPostBCash(PedidoParametroBCashPost ppb, VendaBCashDTO vb, System.Int32 parcelaAtual, SqlTransaction TransacaoSQL, string BankSlipDescription = "")
+        {
+            TransactionService transactionService = new TransactionService();
+            TransactionRequest transactionRequest = new TransactionRequest();
+            TransactionResponse transactionResponse = new TransactionResponse();
+            RemotePost svo = new RemotePost();
+
+            try
+            {
+
+                int intMatrizID = GrupoEmpresaBLL.Listar(new GrupoEmpresaDTO() { grupoEmpresaId = vb.GrupoID })[0].matrizId.Value;
+
+                SVOContaBCashDAL clsSVOContaBCashDAL = new SVOContaBCashDAL();
+                clsSVOContaBCashDAL.Obter(intMatrizID);
+                System.String strConsumerKey = clsSVOContaBCashDAL.ConsumerKey;
+                System.String strSellerMail = clsSVOContaBCashDAL.Email;
+
+                transactionRequest = GenerateTransactionRequest(ppb, vb, strSellerMail, parcelaAtual, BankSlipDescription);
+
+                transactionResponse = transactionService.CreateTransaction(transactionRequest, new OAuthRequestData(strConsumerKey));
+
+                TransactionResponseDTO t = new TransactionResponseDTO();
+
+                t.DescriptionStatus = transactionResponse.DescriptionStatus;
+                t.OrderId = transactionResponse.OrderId;
+                t.PaymentLink = transactionResponse.PaymentLink;
+                t.Status = transactionResponse.Status;
+                t.TransactionId = transactionResponse.TransactionId;
+                t.DataCriacao = DateTime.Now;
+
+                new BCashBO().InserirLogPostBCashApi(t, TransacaoSQL);
+
+                svo.TransactionID = t.TransactionId.ToString();
+                svo.Url = t.PaymentLink;
+
+                if (vb.TipoPagamento == "22") // B!Cash - Cartão de Crédito
+                {
+                    if (t.Status == 1) // 1 = Em andamento
+                    {
+                        svo.Erro = "O status de pagamento retornado foi 'Em andamento'. O contrato não poderá ser gerado.";
+                        svo.CategoriaErro = "StatusPagamento";
+                    }
+                    else if ((t.Status == 3) || (t.Status == 4)) // 3 = Aprovada ou 4 = Concluída
+                    {
+                        svo.Erro = "";
+                        svo.CategoriaErro = "";
+                    }
+                    else if ((t.Status == 5) || (t.Status == 6) || (t.Status == 7) || (t.Status == 8)) // Cancelada
+                    {
+                        svo.Erro = "Compra não aprovada.";
+                        svo.CategoriaErro = "StatusPagamento";
+                    }
+                    else // Qualquer outro status, será considerado como problema.
+                    {
+                        svo.Erro = "Compra não aprovada.";
+                        svo.CategoriaErro = "StatusPagamento";
+                    }
+                }
+                else // B!Cash - Boleto à vista ou B!Cash - Boleto parcelado
+                {
+                    if ((t.Status == 1) || (t.Status == 3) || (t.Status == 4)) // 1 = Em andamento ou 3 = Aprovada ou 4 = Concluída
+                    {
+                        svo.Erro = "";
+                        svo.CategoriaErro = "";
+                    }
+                    else if ((t.Status == 5) || (t.Status == 6) || (t.Status == 7) || (t.Status == 8)) // Cancelada
+                    {
+                        svo.Erro = "Compra não aprovada. status:" + t.Status.ToString() + " - " + (string.IsNullOrEmpty(t.DescriptionStatus) ? "" : t.DescriptionStatus);
+                        svo.CategoriaErro = "StatusPagamento";
+                    }
+                    else // Qualquer outro status, será considerado como problema.
+                    {
+                        svo.Erro = "Compra não aprovada.status:" + t.Status.ToString() + " - " + (string.IsNullOrEmpty(t.DescriptionStatus) ? "" : t.DescriptionStatus);
+                        svo.CategoriaErro = "StatusPagamento";
+                    }
+                }
+            }
+            catch (HttpClientException ex)
+            {
+                svo.Erro = String.Format("{0}, {1}", ex.Message, ex.StackTrace);
+                svo.CategoriaErro = "HttpClientException";
+            }
+            catch (ConnectionException ex)
+            {
+                svo.Erro = String.Format("{0}, {1}", ex.Message, ex.StackTrace);
+                svo.CategoriaErro = "ConnectionException";
+            }
+            catch (ServiceException ex)
+            {
+                svo.CategoriaErro = "ServiceException";
+
+                string erro = string.Empty;
+
+                if (ex.Errors != null)
+                {
+                    foreach (ResponseError error in ex.Errors.List) erro += error.Description + " ";
+                    erro = erro.Substring(0, erro.Length - 2);
+                    svo.CategoriaErro = "ValidationException";
+                }
+                else
+                {
+                    erro = ex.Message.ToString();
+                }
+
+                svo.Erro = erro;
+            }
+            catch (Exception ex)
+            {
+                svo.Erro = ex.Message;
+                svo.CategoriaErro = "Generic";
+            }
+
+            /*
+            if (vb.TipoPagamento == TipoPagamentoDTO.BcashCredito.ToString() && transactionResponse.DescriptionStatus == "Aprovada")
+            {
+              svo = PreenchePostSVODTO(transactionRequest, transactionResponse);
+            }
+            */
+            svo.PedidoId = vb.PedidoID.ToString();
+
+            return svo;
+        }
+        private static RemotePost PreenchePostSVODTO(TransactionRequest a, TransactionResponse b)
+        {
+
+            decimal valor = 0.00M;
+
+            foreach (var item in a.Products)
+            {
+                valor += item.Value;
+            }
+
+            RemotePost myremotepost = new RemotePost();
+
+            myremotepost.Url = Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCash"]);
+            myremotepost.Add("id_transacao", b.TransactionId.ToString());
+            myremotepost.Add("data_transacao", DateTime.Now.ToShortDateString());
+            myremotepost.Add("data_credito", DateTime.Now.ToShortDateString());
+            myremotepost.Add("valor_original", valor.ToString());
+            myremotepost.Add("valor_loja", valor.ToString());
+            myremotepost.Add("valor_total", valor.ToString());
+            myremotepost.Add("desconto", a.Discount.ToString());
+            myremotepost.Add("acrescimo", "0.00");
+            myremotepost.Add("tipo_pagamento", "VISA");
+            myremotepost.Add("parcelas", a.Installments.ToString());
+            myremotepost.Add("status", b.DescriptionStatus);
+            myremotepost.Add("cod_status", "1");
+            myremotepost.Add("cliente_nome", a.Buyer.Name);
+            myremotepost.Add("cliente_email", a.Buyer.Mail);
+            myremotepost.Add("id_pedido", b.OrderId);
+            myremotepost.Add("free", a.Free);
+            myremotepost.Add("email_vendedor", ConfigurationManager.AppSettings["SELLER_EMAIL"]);
+            myremotepost.PedidoId = a.OrderId;
+
+            return myremotepost;
+        }
+
+
+
+
+
+        public int ProcedimentosBCashCartaoCreditoAprovado(string PedidoID, DTO.InscricoesVendaDTO inscricao, int qtdParcelas, string numeroTransacao, string usuarioIP, int usuarioID)
+        {
+            System.Int32 intPedidoID = 0;
+            System.Int32.TryParse(PedidoID, out intPedidoID);
+            if (intPedidoID == 0) return 0;
+
+            SVOPedidoDAL clsSVOPedidoDAL = new SVOPedidoDAL();
+
+            try
+            {
+                System.Data.DataTable dttPedido = clsSVOPedidoDAL.ObterPedido(intPedidoID);
+                if ((dttPedido != null) && (dttPedido.Rows.Count > 0))
+                {
+                    BLL.VendaOnline.Pedido pedido = new BLL.VendaOnline.Pedido();
+                    pedido.AlunoCPF = System.Convert.ToString(dttPedido.Rows[0]["AlunoCPF"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["BolsaAlunoID"])) pedido.BolsaAlunoID = System.Convert.ToInt32(dttPedido.Rows[0]["BolsaAlunoID"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["ChamadaWS"])) pedido.ChamadaWS = System.Convert.ToBoolean(dttPedido.Rows[0]["ChamadaWS"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["ContratoID"])) pedido.ContratoID = System.Convert.ToInt32(dttPedido.Rows[0]["ContratoID"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["CursoID"])) pedido.CursoID = System.Convert.ToInt32(dttPedido.Rows[0]["CursoID"]);
+                    pedido.CursoNome = System.Convert.ToString(dttPedido.Rows[0]["CursoNome"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["DataCriacao"])) pedido.DataCriacao = System.Convert.ToDateTime(dttPedido.Rows[0]["DataCriacao"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["DataStatus"])) pedido.DataStatus = System.Convert.ToDateTime(dttPedido.Rows[0]["DataStatus"]);
+                    pedido.DescricaoStatus = System.Convert.ToString(dttPedido.Rows[0]["DescricaoStatus"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["EmpresaID"])) pedido.EmpresaID = System.Convert.ToInt32(dttPedido.Rows[0]["EmpresaID"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["GradeID"])) pedido.GradeID = System.Convert.ToInt32(dttPedido.Rows[0]["GradeID"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["ID"])) pedido.ID = System.Convert.ToInt32(dttPedido.Rows[0]["ID"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["PercentualDesconto"])) pedido.PercentualDesconto = System.Convert.ToDecimal(dttPedido.Rows[0]["PercentualDesconto"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["StatusID"])) pedido.StatusID = System.Convert.ToInt32(dttPedido.Rows[0]["StatusID"]);
+                    pedido.TipoBolsa = System.Convert.ToString(dttPedido.Rows[0]["TipoBolsa"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["TurmaID"])) pedido.TurmaID = System.Convert.ToInt32(dttPedido.Rows[0]["TurmaID"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["UnidadeID"])) pedido.UnidadeID = System.Convert.ToInt32(dttPedido.Rows[0]["UnidadeID"]);
+                    pedido.UnidadeNome = System.Convert.ToString(dttPedido.Rows[0]["UnidadeNome"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["UnidadeRepasseID"])) pedido.UnidadeRepasseID = System.Convert.ToInt32(dttPedido.Rows[0]["UnidadeRepasseID"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["UsuarioID"])) pedido.UsuarioID = System.Convert.ToInt32(dttPedido.Rows[0]["UsuarioID"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["ValorBruto"])) pedido.ValorBruto = System.Convert.ToDecimal(dttPedido.Rows[0]["ValorBruto"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["ValorDesconto"])) pedido.ValorDesconto = System.Convert.ToDecimal(dttPedido.Rows[0]["ValorDesconto"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["ValorDescontoBCashParceiro"])) pedido.ValorDescontoBCashParceiro = System.Convert.ToDecimal(dttPedido.Rows[0]["ValorDescontoBCashParceiro"]);
+                    pedido.Voucher = System.Convert.ToString(dttPedido.Rows[0]["Voucher"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["Origem"])) pedido.Origem = System.Convert.ToInt32(dttPedido.Rows[0]["Origem"]);
+                    if (!System.Convert.IsDBNull(dttPedido.Rows[0]["TipoPagamento"])) pedido.TipoPagamento = System.Convert.ToInt32(dttPedido.Rows[0]["TipoPagamento"]);
+
+                    using (var db = new Transaction())
+                    {
+                        if ((System.Convert.ToString(pedido.ContratoID) == "") && (!System.Convert.ToBoolean(pedido.ChamadaWS)))
+                        {
+                            clsSVOPedidoDAL.AtualizarPedido(intPedidoID, true, 3);
+
+                            var contratoRetorno = this.VenderComBCash(this.CriarVenda(pedido, inscricao, qtdParcelas, numeroTransacao, usuarioIP, usuarioID));
+                            System.Int32 intContratoID = System.Convert.ToInt32(contratoRetorno.ContratoId);
+                            if (contratoRetorno.Sucesso)
+                            {
+                                clsSVOPedidoDAL.CriarContratoSVO(intPedidoID, intContratoID);
+                                db.Commit();
+
+                                if (!string.IsNullOrEmpty(pedido.Voucher))
+                                {
+                                    VoucherBLL.ConsomeVoucher(pedido.Voucher, intContratoID);
+                                    VoucherMultiploBLL.InsereContrato(pedido.Voucher, intContratoID);
+                                }
+                            }
+                            else
+                            {
+                                db.Rollback();
+
+                                try
+                                {
+                                    if (!string.IsNullOrEmpty(pedido.Voucher))
+                                    {
+                                        VoucherBLL.EstornoVoucher(pedido.Voucher, intContratoID);
+                                        VoucherMultiploBLL.EstornoVoucher(pedido.Voucher, intContratoID);
+                                    }
+                                }
+                                catch (System.Exception ex)
+                                {
+                                    clsSVOPedidoDAL.RegistrarLogRetornoBCashExcecao("Voucher " + pedido.Voucher + " não foi estornado. Detalhes: " + ex.Message, intPedidoID);
+                                }
+
+                                intContratoID = 0;
+                                clsSVOPedidoDAL.RegistrarLogRetornoBCashExcecao(contratoRetorno.MensagemRetorno, intPedidoID);
+                            }
+                            return intContratoID;
+                        }
+                    }
+                }
+                else
+                {
+                    clsSVOPedidoDAL.RegistrarLogRetornoBCashExcecao("ID do Pedido não encontrado no SVO.", intPedidoID);
+                    return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                clsSVOPedidoDAL.RegistrarLogRetornoBCashExcecao(ex.ToString(), intPedidoID);
+                return 0;
+            }
+            return 0;
+        }
+
+        //public BLL.VendaOnline.Venda CriarVenda(BLL.VendaOnline.Pedido pedido, int qtdParcelas, string numeroTransacao, string usuarioIP, int usuarioID)
+        public BLL.VendaOnline.Venda CriarVenda(BLL.VendaOnline.Pedido pedido, DTO.InscricoesVendaDTO inscricaoDTO, int qtdParcelas, string numeroTransacao, string usuarioIP, int usuarioID)
+        {
+            SVOPedidoDAL clsSVOPedidoDAL = new SVOPedidoDAL();
+            System.Data.DataTable dttAluno = clsSVOPedidoDAL.ObterAluno(System.Convert.ToInt32(pedido.ID), pedido.AlunoCPF);
+            BLL.VendaOnline.Aluno aluno = new BLL.VendaOnline.Aluno();
+
+            aluno.Bairro = System.Convert.ToString(dttAluno.Rows[0]["Bairro"]);
+            aluno.Cep = System.Convert.ToString(dttAluno.Rows[0]["Cep"]);
+            aluno.Cidade = System.Convert.ToString(dttAluno.Rows[0]["Cidade"]);
+            aluno.Complemento = System.Convert.ToString(dttAluno.Rows[0]["Complemento"]);
+            aluno.Cpf = System.Convert.ToString(dttAluno.Rows[0]["Cpf"]);
+            if (!System.Convert.IsDBNull(dttAluno.Rows[0]["DataNascimento"])) aluno.DataNascimento = System.Convert.ToDateTime(dttAluno.Rows[0]["DataNascimento"]);
+            aluno.Email = System.Convert.ToString(dttAluno.Rows[0]["Email"]);
+            if (!System.Convert.IsDBNull(dttAluno.Rows[0]["EstadoCivil"])) aluno.EstadoCivil = System.Convert.ToInt32(dttAluno.Rows[0]["EstadoCivil"]);
+            aluno.Logradouro = System.Convert.ToString(dttAluno.Rows[0]["Logradouro"]);
+            aluno.Nome = System.Convert.ToString(dttAluno.Rows[0]["Nome"]);
+            aluno.Numero = System.Convert.ToString(dttAluno.Rows[0]["Numero"]);
+            aluno.RG = System.Convert.ToString(dttAluno.Rows[0]["RG"]);
+            if (!System.Convert.IsDBNull(dttAluno.Rows[0]["Sexo"])) aluno.Sexo = System.Convert.ToChar(dttAluno.Rows[0]["Sexo"]);
+            aluno.TelCelDdd = System.Convert.ToString(dttAluno.Rows[0]["TelCelDdd"]);
+            aluno.TelCelNum = System.Convert.ToString(dttAluno.Rows[0]["TelCelNum"]);
+            aluno.TelCmlDdd = System.Convert.ToString(dttAluno.Rows[0]["TelCmlDdd"]);
+            aluno.TelCmlNum = System.Convert.ToString(dttAluno.Rows[0]["TelCmlNum"]);
+            aluno.TelCmlRamal = System.Convert.ToString(dttAluno.Rows[0]["TelCmlRamal"]);
+            aluno.TelResDdd = System.Convert.ToString(dttAluno.Rows[0]["TelResDdd"]);
+            aluno.TelResNum = System.Convert.ToString(dttAluno.Rows[0]["TelResNum"]);
+            aluno.UF = System.Convert.ToString(dttAluno.Rows[0]["UF"]);
+
+            BLL.VendaOnline.Venda v = new BLL.VendaOnline.Venda();
+            v.Aluno = aluno;
+            v.UnidadeId = Convert.ToInt32(pedido.UnidadeID);
+            v.UsuarioId = usuarioID;
+            v.VendedorId = Convert.ToInt32(ConfigurationManager.AppSettings["VendedorId"] ?? "1");
+            v.IP = usuarioIP;
+            v.ValorTotal = Convert.ToDouble(pedido.ValorBruto - pedido.ValorDesconto);
+            v.valorVendaBruto = Convert.ToDouble(pedido.ValorBruto);
+            v.valorDescontoBruto = Convert.ToDouble(pedido.ValorDesconto);
+            v.NumeroParcelas = qtdParcelas;
+            v.bolsaAlunoId = Convert.ToInt32(pedido.BolsaAlunoID);
+            v.tipoBolsa = pedido.TipoBolsa;
+            v.OperadorPagamentoID = BLL.VendaOnline.OperadorPagamento.BCash;
+            v.PedidoID = pedido.ID.Value;
+            v.NumeroTransacao = numeroTransacao;
+            v.UnidadeDestinoID = Convert.ToInt32(pedido.UnidadeRepasseID);
+
+            //Pagamentos =========================================================================
+            List<BLL.VendaOnline.Pagamento> listaPagamentos = new List<BLL.VendaOnline.Pagamento>();
+
+            var valorParcela = Convert.ToDecimal(v.ValorTotal) / qtdParcelas;
+
+            for (int i = 1; i <= qtdParcelas; i++)
+            {
+                BLL.VendaOnline.Pagamento pagamento = new BLL.VendaOnline.Pagamento();
+                pagamento.TipoPagamentoId = pedido.TipoPagamento;
+                pagamento.Parcela = i;
+                pagamento.DataVencimento = FeriadoBLL.RetornaProximoDiaUtil(DateTime.Now.AddMonths(i - 1));
+                pagamento.Valor = valorParcela;
+                listaPagamentos.Add(pagamento);
+            }
+
+            v.Pagamentos = listaPagamentos;
+
+            var retornoValidarVoucher = ValidarVoucher(pedido.Voucher, System.Convert.ToInt32(pedido.UnidadeID), System.Convert.ToInt32(pedido.CursoID));
+            BLL.VendaOnline.ValidacaoVoucherDTO voucherDTO = new BLL.VendaOnline.ValidacaoVoucherDTO();
+            voucherDTO.Desconto = retornoValidarVoucher.Desconto;
+            voucherDTO.Mensagem = retornoValidarVoucher.Mensagem;
+            voucherDTO.StatusValidacao = (BLL.VendaOnline.ValidacaoVoucher)retornoValidarVoucher.StatusValidacao;
+            decimal comissaoTerceiro = retornoValidarVoucher.ComissaoTerceiro;
+
+
+
+            int intParcelaRepasse = 0;
+            double dblValorRepasseParceiro = 0;
+            System.Int32 intPedidoId = pedido.ID.Value;
+            if (intPedidoId != 0)
+            {
+                try
+                {
+                    System.Data.DataTable dttPPBP = clsSVOPedidoDAL.ObterPedidoParametroBCashPost(System.Convert.ToInt32(pedido.ID));
+                    PedidoParametroBCashPost ppbp = null;
+                    if ((dttPPBP != null) && (dttPPBP.Rows.Count > 0))
+                    {
+                        ppbp = new PedidoParametroBCashPost();
+                        ppbp.CPF = System.Convert.ToString(dttPPBP.Rows[0]["CPF"]);
+                        if (!System.Convert.IsDBNull(dttPPBP.Rows[0]["DataEnvio"])) ppbp.DataEnvio = System.Convert.ToDateTime(dttPPBP.Rows[0]["DataEnvio"]);
+                        ppbp.Email = System.Convert.ToString(dttPPBP.Rows[0]["Email"]);
+                        ppbp.EmailDependente1 = System.Convert.ToString(dttPPBP.Rows[0]["EmailDependente1"]);
+                        ppbp.EmailDependente2 = System.Convert.ToString(dttPPBP.Rows[0]["EmailDependente2"]);
+                        ppbp.EmailLoja = System.Convert.ToString(dttPPBP.Rows[0]["EmailLoja"]);
+                        if (!System.Convert.IsDBNull(dttPPBP.Rows[0]["Frete"])) ppbp.Frete = System.Convert.ToDecimal(dttPPBP.Rows[0]["Frete"]);
+                        ppbp.Hash = System.Convert.ToString(dttPPBP.Rows[0]["Hash"]);
+                        ppbp.Nome = System.Convert.ToString(dttPPBP.Rows[0]["Nome"]);
+                        ppbp.ParcelaMaxima = System.Convert.ToString(dttPPBP.Rows[0]["ParcelaMaxima"]);
+                        if (!System.Convert.IsDBNull(dttPPBP.Rows[0]["PedidoID"])) ppbp.PedidoID = System.Convert.ToInt32(dttPPBP.Rows[0]["PedidoID"]);
+                        ppbp.ProdutoCodigo1 = System.Convert.ToString(dttPPBP.Rows[0]["ProdutoCodigo1"]);
+                        ppbp.ProdutoDescricao1 = System.Convert.ToString(dttPPBP.Rows[0]["ProdutoDescricao1"]);
+                        if (!System.Convert.IsDBNull(dttPPBP.Rows[0]["ProdutoQtde1"])) ppbp.ProdutoQtde1 = System.Convert.ToInt32(dttPPBP.Rows[0]["ProdutoQtde1"]);
+                        if (!System.Convert.IsDBNull(dttPPBP.Rows[0]["ProdutoValor1"])) ppbp.ProdutoValor1 = System.Convert.ToDecimal(dttPPBP.Rows[0]["ProdutoValor1"]);
+                        ppbp.Redirect = System.Convert.ToString(dttPPBP.Rows[0]["Redirect"]);
+                        ppbp.Telefone = System.Convert.ToString(dttPPBP.Rows[0]["Telefone"]);
+                        ppbp.TempoRedirecionamento = System.Convert.ToString(dttPPBP.Rows[0]["TempoRedirecionamento"]);
+                        ppbp.TipoIntegracao = System.Convert.ToString(dttPPBP.Rows[0]["TipoIntegracao"]);
+                        ppbp.UrlAviso = System.Convert.ToString(dttPPBP.Rows[0]["UrlAviso"]);
+                        ppbp.UrlRetorno = System.Convert.ToString(dttPPBP.Rows[0]["UrlRetorno"]);
+                        if (!System.Convert.IsDBNull(dttPPBP.Rows[0]["ValorDependente1"])) ppbp.ValorDependente1 = System.Convert.ToDecimal(dttPPBP.Rows[0]["ValorDependente1"]);
+                        if (!System.Convert.IsDBNull(dttPPBP.Rows[0]["ValorDependente2"])) ppbp.ValorDependente2 = System.Convert.ToDecimal(dttPPBP.Rows[0]["ValorDependente2"]);
+                    }
+
+                    if (ppbp != null)
+                    {
+                        v.EmailBCash = ppbp.EmailDependente1;
+
+                        if (ppbp.ParcelaMaxima != null) ppbp.ParcelaMaxima = ppbp.ParcelaMaxima.Trim();
+                        System.Int32.TryParse(ppbp.ParcelaMaxima, out intParcelaRepasse);
+
+                        if ((ppbp.ValorDependente1.HasValue) && (ppbp.ValorDependente1.Value != 0)) dblValorRepasseParceiro = System.Convert.ToDouble(ppbp.ValorDependente1);
+                    }
+                }
+                catch { }
+            }
+
+            List<BLL.VendaOnline.InscricaoVenda> listaInscricao = new List<BLL.VendaOnline.InscricaoVenda>();
+
+            foreach (DTO.InscricaoVendaDTO inscricaoDTO_Atual in inscricaoDTO)
+            {
+                BLL.VendaOnline.InscricaoVenda inscricao = new BLL.VendaOnline.InscricaoVenda();
+                inscricao.TurmaId = inscricaoDTO_Atual.TurmaId;
+                inscricao.GradeId = inscricaoDTO_Atual.GradeId;
+                inscricao.CursoId = inscricaoDTO_Atual.CursoId;
+                inscricao.TransmissaoTipoId = inscricaoDTO_Atual.TipoTransmissao;
+                inscricao.QtdParcelas = qtdParcelas;
+                inscricao.ValorVenda = System.Convert.ToDecimal(inscricaoDTO_Atual.Valor);
+                inscricao.DataInscricao = inscricaoDTO_Atual.DataInscricao;
+                inscricao.PercentualBolsista = inscricaoDTO_Atual.PercentualDesconto;
+                inscricao.PercentualComissaoTerceiro = comissaoTerceiro;
+                inscricao.BolsaId = inscricaoDTO_Atual.BolsaId;
+                inscricao.TipoBolsa = inscricaoDTO_Atual.TipoBolsa;
+                inscricao.ValorVendaBruto = System.Convert.ToDecimal(inscricaoDTO_Atual.ValorVendaBruto);
+                inscricao.ParcelaRepasse = intParcelaRepasse;
+                inscricao.ValorRepasseParceiro = dblValorRepasseParceiro;
+                inscricao.ComissionamentoBroker = 0;
+                inscricao.ValorDescontoBCashParceiro = System.Convert.ToDouble(inscricaoDTO_Atual.ValorDescontoBCashParceiro);
+                inscricao.DescontoGradeId = inscricaoDTO_Atual.DescontoGradeId;
+                //inscricao.DescontoTipo = inscricaoDTO_Atual.DescontoTipo;
+                inscricao.TipoBolsa = inscricaoDTO_Atual.TipoBolsa;
+                inscricao.TipoBolsaGrade = inscricaoDTO_Atual.TipoBolsaGrade;
+
+                listaInscricao.Add(inscricao);
+            }
+
+            /*
+            BLL.VendaOnline.InscricaoVenda inscricao = new BLL.VendaOnline.InscricaoVenda();
+            inscricao.TurmaId = pedido.TurmaID.Value;
+            inscricao.GradeId = pedido.GradeID.Value;
+            inscricao.CursoId = pedido.CursoID.Value;
+            inscricao.TransmissaoTipoId = 2;
+            inscricao.QtdParcelas = qtdParcelas;
+            inscricao.ValorVenda = Convert.ToDecimal(dblValor);
+            inscricao.DataInscricao = DateTime.Now;
+            if (pedido.PercentualDesconto != null)
+              inscricao.PercentualBolsista = pedido.PercentualDesconto.Value;
+            else
+              inscricao.PercentualBolsista = 0;
+            inscricao.PercentualComissaoTerceiro = comissaoTerceiro;
+            inscricao.BolsaId = Convert.ToInt32(pedido.BolsaAlunoID);
+            inscricao.TipoBolsa = pedido.TipoBolsa;
+
+            if (pedido.Origem != 1)
+            {
+              inscricao.ValorVendaBruto = System.Convert.ToDecimal(dblValor) + System.Convert.ToDecimal(pedido.ValorDesconto);
+            }
+            else
+            {
+              inscricao.ValorVendaBruto = System.Convert.ToDecimal(dblValor);
+            }
+            inscricao.ParcelaRepasse = intParcelaRepasse;
+            inscricao.ValorRepasseParceiro = dblValorRepasseParceiro;
+            inscricao.ComissionamentoBroker = dblComissionamentoBroker;
+            inscricao.ValorDescontoBCashParceiro = System.Convert.ToDouble(pedido.ValorDescontoBCashParceiro);
+
+            listaInscricao.Add(inscricao);
+            */
+
+            /*
+            InscricaoBonificacaoBO businessBonificacao = new InscricaoBonificacaoBO();
+            var bonificacoes = businessBonificacao.Consultar(new InscricaoBonificacao { PedidoID = pedido.ID });
+
+            listaInscricao.AddRange(this.ConverterBonificacoes(bonificacoes));
+            */
+            v.Inscricoes = listaInscricao;
+            v.Inscricoes = v.Inscricoes.Select(x => { x.DataPedido = Convert.ToDateTime(pedido.DataCriacao); ; return x; }).ToList();
+            return v;
+        }
+
+        public BLL.VendaOnline.ContratoRetorno VenderComBCash(BLL.VendaOnline.Venda entradaVenda)
+        {
+            BLL.VendaOnline.ContratoRetorno retorno = new BLL.VendaOnline.ContratoRetorno();
+
+            try
+            {
+                //Verificar se transação já possui contrato gerado
+                int contratoExistente = RetornoBCashBLL.PossuiContrato(entradaVenda.NumeroTransacao);
+
+                if (contratoExistente != 0)
+                {
+                    retorno.ContratoId = contratoExistente.ToString();
+                    retorno.Sucesso = true;
+                    retorno.MensagemRetorno = "Sucesso";
+                }
+                else
+                {
+                    using (Transaction t = new Transaction())
+                    {
+                        try
+                        {
+                            //Fazendo a Venda
+                            VendaEntradaDTO entradaDTO = new VendaEntradaDTO();
+                            int contratoId = ProcessoVenda(entradaVenda, t, out  entradaDTO);
+                            if (contratoId <= 0) throw new Exception("Erro na venda");
+
+                            MatrizDTO entMatriz = MatrizBLL.SelecionarPorContrato(contratoId);
+
+                            // TODO: Arthur: Entender o que é e mudar "DetalheMovimentacaoId = 29" para chave no Web.Config
+                            //Lançamento no Extrato
+                            ExtratoLancamentoDTO el = new ExtratoLancamentoDTO()
+                            {
+                                UnidadeId = entradaVenda.UnidadeId,
+                                MatrizId = entMatriz.MatrizId,
+                                DetalheMovimentacaoId = 29,
+                                Valor = Convert.ToDecimal(entradaVenda.ValorTotal),
+                                DataMovimento = DateTime.Now,
+                                DataCompetencia = DateTime.Now,
+                                OrigemLancamentoId = OrigemLancamentoDTO.VENDA,
+                                ContratoId = contratoId,
+                                TipoLancamentoId = TipoLancamentoDTO.CREDITO,
+                                UsuarioId = entradaVenda.UsuarioId
+                            };
+                            ExtratoLancamentoBLL.Inserir(el);
+
+                            //Lançar tipo de contrato
+                            ContratoVendaTipoBLL.AtualizaTipoContrato(contratoId, ContratoVendaTipoDTO.VENDA_DIRETA);
+
+                            //Atualizando Status de liberação do contrato
+                            ContratoContratoStatusLiberacaoBLL.Inserir(new ContratoContratoStatusLiberacaoDTO()
+                            {
+                                ContratoId = contratoId,
+                                DataCriacao = DateTime.Now,
+                                UsuarioId = entradaVenda.UsuarioId,
+                                StatusLiberacaoId = ContratoStatusLiberacaoDTO.AGUARDANDO_LIBERACAO,
+                                Justificativa = "Venda"
+                            });
+
+                            ContratoTurmaBLL.AtualizarStatusContratoTurma(contratoId, ContratoTurma.ATIVO);
+                            ContratoBLL.AlterarContratoStatusPagamento(contratoId, ContratoStatusPagamentoDTO.TRANSACAO_CONFIRMADA, entradaVenda.UsuarioId);
+
+                            //Identificar que venda foi feita pelo BCash
+                            ContratoPagamentoBLL.DefinirOperadorPagamento(contratoId, Convert.ToInt32(BLL.VendaOnline.OperadorPagamento.BCash));
+
+                            //Inserir Retorno do BCash
+                            RetornoBCashDTO rbcash = new RetornoBCashDTO();
+                            rbcash.ContratoID = contratoId;
+                            rbcash.NumeroTransacao = entradaVenda.NumeroTransacao;
+                            rbcash.PedidoSVOID = entradaVenda.PedidoID;
+                            rbcash.EmailBCash = entradaVenda.EmailBCash;
+                            rbcash.DataRegistro = DateTime.Now;
+
+                            RetornoBCashBLL.Inserir(rbcash);
+
+                            //R10: Os títulos de repasse devem ser lançados como baixados.
+                            ContratoBLL.BaixarTitulosRepasse(contratoId);
+
+                            //Construindo o Retorno
+                            retorno.ContratoId = contratoId.ToString();
+                            retorno.Sucesso = true;
+                            retorno.MensagemRetorno = "Sucesso";
+                            t.Commit();
+                        }
+                        catch (Exception e)
+                        {
+                            retorno.ContratoId = "0";
+                            retorno.Sucesso = false;
+                            retorno.MensagemRetorno = "Erro Tratado: " + e.ToString();
+
+                            t.Rollback();
+                        }
+                    }
+
+                    if (retorno.Sucesso)
+                    {
+                        using (Transaction tranUnidadeDestino = new Transaction())
+                        {
+                            ContratoBLL.AtualizarUnidadeDestino(Convert.ToInt32(retorno.ContratoId), entradaVenda.UnidadeDestinoID);
+
+                            tranUnidadeDestino.Commit();
+                        }
+                    }
+
+                    if (retorno.Sucesso)
+                        IntegrarComMoodle(entradaVenda.Inscricoes, int.Parse(retorno.ContratoId), entradaVenda.UnidadeId, entradaVenda.Aluno.Cpf, entradaVenda.Aluno.Email, entradaVenda.Aluno.Nome);
+                }
+            }
+            catch (Exception e)
+            {
+                retorno.ContratoId = "0";
+                retorno.Sucesso = false;
+                retorno.MensagemRetorno = "Erro Tratado: " + e.ToString();
+            }
+
+            return retorno;
+        }
+
+        public int ProcessoVenda(BLL.VendaOnline.Venda entradaVenda, Transaction t, out VendaEntradaDTO entradaDTO)
+        {
+<<<<<<< HEAD
+
+            string TaxBcash = string.Empty;
+=======
+            
+            string TaxBcash = "0";
+>>>>>>> origin/master
+            entradaDTO = new VendaEntradaDTO();
+            VendaBLL vendaBLL = new VendaBLL();
+            entradaDTO.PedidoId = entradaVenda.PedidoID;
+            entradaDTO.UnidadeId = entradaVenda.UnidadeId;
+            entradaDTO.UnidadeDestinoId = entradaVenda.UnidadeDestinoID;
+            entradaDTO.UsuarioId = entradaVenda.UsuarioId;
+            entradaDTO.VendedorId = entradaVenda.VendedorId;
+            entradaDTO.ValorTotal = entradaVenda.ValorTotal;
+            entradaDTO.ValorDescontoBruto = entradaVenda.valorDescontoBruto;
+            entradaDTO.ValorVendaBruto = entradaVenda.valorVendaBruto;
+            entradaDTO.IP = entradaVenda.IP;
+            entradaDTO.AlunoId = entradaVenda.Aluno.Salvar(entradaDTO.UnidadeId, entradaDTO.IP, entradaDTO.UsuarioId);
+
+            if (entradaVenda.Pagamentos.Count > 0)
+                TaxBcash = ConfigAppSettingsBLL.BuscarPorKey(string.Format("TaxaBcash_{0}", entradaVenda.Pagamentos[0].TipoPagamentoId));
+
+            entradaDTO.PercentualTaxaBCash = Convert.ToDouble(TaxBcash);
+
+            //Inscrições ----------------------------------------------------------------------------------------------------------
+            entradaDTO.Inscricoes = new InscricoesVendaDTO();
+
+            foreach (var i in entradaVenda.Inscricoes)
+            {
+                CalculoRepasseDTO calculo = new CalculoRepasseDTO();
+
+                if (entradaVenda.Pagamentos.Count > 0)
+                {
+                    var tipoPagamento = (TipoPagamentoDTO.TipoPagamentoBcash)Enum.ToObject(typeof(TipoPagamentoDTO.TipoPagamentoBcash), entradaVenda.Pagamentos[0].TipoPagamentoId);
+                    calculo = entradaVenda.OrigemVenda == 3 ?
+                         VendaBLL.CalculaRepasse(i.ValorVendaBruto, entradaDTO.UnidadeId, entradaDTO.UnidadeDestinoId, i.TurmaId, tipoPagamento, Convert.ToDecimal(entradaDTO.ValorDescontoBruto), false, i.DataInscricao)
+                       : VendaBLL.CalculaRepasse(i.ValorVendaBruto, entradaDTO.UnidadeId, entradaDTO.UnidadeDestinoId, i.TurmaId, tipoPagamento, Convert.ToDecimal(entradaDTO.ValorDescontoBruto), false, i.DataPedido);
+                }
+
+                InscricaoVendaDTO inscricao = new InscricaoVendaDTO();
+
+                int? SalaId = EnsalamentoBLL.SalaPorTurma(i.TurmaId, entradaDTO.UnidadeId, false); //TurmaSalaBLL.SalaPorTurma(t.TurmaId, unidadeID);
+                if (SalaId == null || SalaId <= 0) //VERIFICA SE A SALA EXISTE NA UNIDADE LFG ONLINE
+                {
+                    SalaId = EnsalamentoBLL.SalaPorTurma(i.TurmaId, 211499, false);
+                }
+
+                if (SalaId != null && SalaId > 0)
+                {
+                    inscricao.TurmaId = i.TurmaId;
+                    entradaDTO.SalaId = SalaId.Value;
+                    entradaDTO.EnsalamentoId = EnsalamentoBLL.ObterID(inscricao.TurmaId, entradaDTO.SalaId);
+                }
+                else
+                    throw new Exception("Não há mais vagas na sala para essa turma.");
+
+                inscricao.GradeId = i.GradeId;
+                inscricao.CursoId = i.CursoId;
+                inscricao.TipoTransmissao = i.TransmissaoTipoId;
+                inscricao.TipoBolsa = i.TipoBolsa;
+                inscricao.NaoUtilizarBolsa = i.NaoUtilizarBolsa;
+                inscricao.Parcela = i.QtdParcelas;
+                inscricao.DataInscricao = i.DataInscricao;
+                inscricao.ConvenioId = i.ConvenioId;
+                inscricao.EmpresaConveniadaId = i.EmpresaConveniadaId;
+                inscricao.PercentualMonitor = i.PercentualBolsista;
+                inscricao.BolsaId = i.BolsaId;
+                inscricao.DescontoGradeId = i.DescontoGradeId;
+                inscricao.DescontoTipoGrade = i.DescontoTipo;
+                inscricao.TipoBolsaGrade = i.TipoBolsaGrade;
+
+                //Valor Total
+                inscricao.Valor =
+                inscricao.ValorLiquidacao = Convert.ToDouble(i.ValorVenda);
+                inscricao.ValorVendaBruto = i.ValorVendaBruto;
+                inscricao.ValorVendaParceiroComTaxaBcash = Convert.ToDecimal(calculo.ValorVendaParceiroComTaxaBcash);
+                inscricao.ValorTaxaBCashLFG = Convert.ToDecimal(calculo.ValorTaxaBCashLFG);
+                inscricao.ValorDescontoBCashParceiro = calculo.ValorDescontoBCashParceiro;
+                inscricao.ValorDescontoParceiro = Convert.ToDecimal(calculo.ValorDescontoParceiro);
+
+                if (i.ValorVenda == 0)
+                {
+                    calculo.ValorRepasseLFG = 0;
+                }
+
+                //Calculo de repasse
+                inscricao.ValorVendaParceiro = 0;
+                inscricao.ValorRepasseSemTaxaBcash = 0;
+                inscricao.ValorRepasse = calculo.ValorRepasseLFG;
+
+
+                //Quando for unidade propria o valor do repasse é total, ou seja, ele é o valor da venda.
+                int intUnidadeLFGOnlineId = int.Parse(ConfigAppSettingsBLL.BuscarObjetoPorKey("UnidadeLFGOnlineId").AppValue);
+                var ucb = new BCashBO().IdentificarUnidade(entradaVenda.UnidadeId.Equals(intUnidadeLFGOnlineId) && entradaVenda.UnidadeDestinoID > 0 ? entradaVenda.UnidadeDestinoID : entradaVenda.UnidadeId);
+                if (!ucb.Propria)
+                {
+                   
+                    inscricao.ValorRepasseSemTaxaBcash = Convert.ToDecimal(calculo.ValorRepasseSemTaxaBcash);
+                    //somente se a unidade não for própria estes valores serão diferente de 0
+                    inscricao.ValorVendaParceiro = Convert.ToDecimal(calculo.ValorRepasseParceiro);
+                    //inscricao.ValorDescontoParceiro = inscricao.ValorVendaParceiro * Convert.ToDecimal(i.PercentualBolsista / 100);
+                }
+
+                inscricao.ParcelaRepasse = i.ParcelaRepasse;
+
+                //Valores
+                inscricao.ValorDescontoBruto = VendaBLL.ValorDescontoBruto(inscricao.ValorVendaBruto, inscricao.ValorLiquidacao);
+                inscricao.ValorParcelaVenda = VendaBLL.ValorParcelaVenda(i.ValorVenda, i.PercentualBolsista, i.QtdParcelas);
+
+                inscricao.IsBonificado = i.IsBonificado;
+
+                entradaDTO.Inscricoes.Add(inscricao);
+            }
+
+            // Parcelas -------------------------------------------------------------------------------------------------------------------------
+            entradaDTO.Pagamentos = new ChequesDTO();
+
+            foreach (var p in entradaVenda.Pagamentos)
+            {
+                ChequeDTO cheque = new ChequeDTO();
+
+                cheque.tipopagamento = p.TipoPagamentoId;
+                cheque.cmc7 = p.CMC7;
+                cheque.banco = p.Banco;
+                cheque.agencia = p.Agencia;
+                cheque.contacorrente = p.Conta;
+                cheque.numeroCheque = p.NumeroCheque;
+                cheque.parcela = p.Parcela;
+                cheque.dt_vencimento = p.DataVencimento;
+                cheque.valor = p.Valor;
+                cheque.Emitente = p.Emitente;
+                cheque.PontoVendaId = p.PontoVendaId;
+                cheque.NumeroPV = p.NumeroPV;
+                cheque.NumeroAutorizacao = p.NumeroAutorizacao;
+
+                entradaDTO.Pagamentos.Add(cheque);
+            }
+
+            // Concluir -------------------------------------------------------------------------------------------------------------------------
+            int contratoId = vendaBLL.ConcluirVendaOnline(entradaDTO, t.SqlTransaction);
+
+            // Informa o número do contrato (venda) que utilizou o voucher            
+            VoucherBLL.ConsomeVoucher(entradaVenda.Voucher, contratoId);
+            VoucherMultiploBLL.InsereContrato(entradaVenda.Voucher, contratoId);
+
+            //IntegrarComMoodle(contratoId);
+            //integracaoSalaVirtualBLL.integrarContrato(contratoId, ConfigurationManager.AppSettings["origemSalaVirtual"]);
+            return contratoId;
+        }
+
+        public void IntegrarComMoodle(List<BLL.VendaOnline.InscricaoVenda> inscricoes, int contratoId, int unidadeId, string cpf, string email, string nome)
+        {
+            string origemSalaVirtual = ConfigurationManager.AppSettings["origemSalaVirtual"];
+            integracaoSalaVirtualBLL.integrarContrato(contratoId, origemSalaVirtual);
+        }
+
+        public static DTO.DescontoDTO VerificarDesconto(int gradeId, int turmaId, int unidadeId, string alunoCpf)
+        {
+            return new BCashBO().VerificarDesconto(gradeId, turmaId, unidadeId, alunoCpf);
+        }
+
+        public static UnidadesBLL ObterUnidade(int cursoId, int tipoUnidadeId, string empresasId)
+        {
+            return new UnidadesBLL().ObterUnidades(cursoId, tipoUnidadeId, empresasId);
+        }
+
+        public CursoDTO ObterCurso(int cursoId)
+        {
+            return CursoBLL.Recuperar(cursoId);
+        }
+
+        public static List<InscricaoVendaDTO> VerificarBonificacoes(int gradeId, int unidadeId, int tipoTransmissao)
+        {
+            List<InscricaoVendaDTO> lstBonificacoes = new List<InscricaoVendaDTO>();
+
+            try
+            {
+                var bonificacoes = VendaBLL.VerificaBonificacoes(gradeId, unidadeId, tipoTransmissao);
+
+                foreach (InscricaoVendaDTO b in bonificacoes)
+                {
+                    InscricaoVendaDTO boni = new InscricaoVendaDTO();
+                    boni.TurmaId = b.TurmaId;
+                    boni.GradeId = b.GradeId;
+                    boni.CursoId = b.CursoId;
+                    boni.TipoTransmissao = b.TipoTransmissao;
+                    boni.TipoBolsa = b.TipoBolsa;
+                    boni.NaoUtilizarBolsa = b.NaoUtilizarBolsa;
+                    boni.Parcela = Convert.ToInt32(b.ParcelaRepasse);
+                    boni.ValorVendaBruto = b.ValorVendaBruto;
+                    boni.DataInscricao = b.DataInscricao;
+                    boni.ConvenioId = b.ConvenioId;
+                    boni.EmpresaConveniadaId = b.EmpresaConveniadaId;
+                    boni.PercentualDesconto = b.PercentualDesconto;
+                    boni.BolsaId = b.BolsaId;
+                    boni.GradeDescricao = b.CursoNome; //FOI ALTERADO O CAMPO APOS SOLICITACAO DO CLIENTE DE EXIBIR O NOME DO CURSO NA GRID DE BONIFICACOES DO SVO
+                    boni.GradeCargaHoraria = b.GradeCargaHoraria;
+                    boni.GradeUnidadeInicio = b.GradeUnidadeInicio;
+                    boni.GradeUnidadeTermino = b.GradeUnidadeTermino;
+
+                    int? SalaId = b.SalaId;
+
+                    //Verifica se a bonificação tem sala
+                    if ((SalaId == null || SalaId == 0)) //VERIFICACAO METODO ANTIGO
+                    {
+                        SalaId = EnsalamentoBLL.SalaPorTurma(b.TurmaId, unidadeId);
+                    }
+
+                    if ((SalaId == null || SalaId == 0)) //VERIFICACAO METODO ANTIGO
+                    {
+                        SalaId = TurmaSalaBLL.SalaPorTurma(b.TurmaId, unidadeId);
+                    }
+
+                    if ((SalaId == null || SalaId == 0)) //CASO O CURSO SEJA ONLINE
+                    {
+                        SalaId = EnsalamentoBLL.SalaPorTurma(b.TurmaId, 211499); //UNIDADE LFG ONLINE 
+                    }
+
+                    if (SalaId != null && SalaId > 0)
+                        lstBonificacoes.Add(boni);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                //implementar
+            }
+
+            return lstBonificacoes;
+        }
+
+        public ValidacaoVoucherBCashDTO ValidarVoucher(string numeroVoucher, int idUnidade, int idCurso)
+        {
+            var de = VoucherBLL.ValidarVoucherSVO(numeroVoucher, idUnidade, idCurso);
+            var para = new ValidacaoVoucherBCashDTO();
+
+            para.Desconto = de.Desconto;
+            para.Mensagem = de.Mensagem;
+            para.StatusValidacao = (ValidacaoVoucher)de.StatusValidacao;
+            para.ComissaoTerceiro = de.ComissaoTerceiro;
+            para.EmailBroker = de.EmailBroker;
+            para.InstituicaoId = de.InstituicaoId;
+
+            //Caso não encontre na tabela de voucher simples, deve buscar na tabela de voucher multiplo
+            if (para.StatusValidacao == ValidacaoVoucher.VoucherInvalido)
+            {
+                de = VoucherMultiploBLL.ValidarVoucherSVO(numeroVoucher, idUnidade, idCurso);
+
+                para.Desconto = de.Desconto;
+                para.Mensagem = de.Mensagem;
+                para.StatusValidacao = (ValidacaoVoucher)de.StatusValidacao;
+                para.ComissaoTerceiro = de.ComissaoTerceiro;
+                para.EmailBroker = de.EmailBroker;
+                para.InstituicaoId = de.InstituicaoId;
+            }
+
+            return para;
+        }
+
+        /// <summary>
+        /// Método responsavel por montar o objeto de Transação que será enviado para a Bcash
+        /// </summary>
+        /// <param name="ppb"></param>
+        /// <param name="vb"></param>
+        /// <param name="sSellerMail"></param>
+        /// <param name="parcelaAtual"></param>
+        /// <param name="BankSlipDescription">Campo de instruções do boleto -> Somente enviar algum valor neste campo se for um Request de Boleto Parcelado</param>
+        /// <returns></returns>
+        private static TransactionRequest GenerateTransactionRequest(PedidoParametroBCashPost ppb, VendaBCashDTO vb, System.String sSellerMail, System.Int32 parcelaAtual, string BankSlipDescription = "")
+        {
+            System.Collections.Generic.List<DependentTransaction> dptTransacoesDependentes = null;
+            if (((ppb.EmailDependente1 != null) && (ppb.ValorDependente1 != null)) && ((ppb.EmailDependente1.Trim() != "") && (ppb.ValorDependente1 > 0)))
+            {
+                dptTransacoesDependentes = new System.Collections.Generic.List<DependentTransaction>();
+                dptTransacoesDependentes.Add(new DependentTransaction(ppb.EmailDependente1, System.Convert.ToDecimal(ppb.ValorDependente1)));
+            }
+            TransactionRequest transactionRequest;
+
+            if (string.IsNullOrEmpty(BankSlipDescription))
+                transactionRequest = new TransactionRequest()
+                {
+                    SellerMail = sSellerMail,
+                    OrderId = ppb.PedidoID.ToString(),
+                    Free = string.Empty,
+                    Freight = new Decimal(0),
+                    FreightType = string.Empty,
+                    Discount = new Decimal(0),
+                    Addition = new Decimal(0),
+                    UrlReturn = (((vb.TipoPagamento == "24") && (parcelaAtual >= 2)) ? Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCashSGA"]) : Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCash"])),
+                    UrlNotification = string.Empty,
+                    Installments = ((vb.TipoPagamento == "23" || vb.TipoPagamento == "24" || vb.Parcela == 0) ? 1 : vb.Parcela),
+                    Currency = CURRENCY,
+                    ViewedContract = true,
+                    AcceptedContract = true,
+                    PaymentMethod = (vb.TipoPagamento == "22" ? new PaymentMethod(SelectCreditCard(vb.cartaoCredito.bandeira)) : new PaymentMethod(PaymentMethodEnum.BANK_SLIP)),
+                    CreditCard = (vb.TipoPagamento == "22" ? GenerateCreditCard(vb) : null),
+                    Buyer = GenerateCustomer(ppb, vb),
+                    Products = GenerateProducts(vb.inscricoes, System.Convert.ToInt32(vb.TipoPagamento), System.Convert.ToInt32(ppb.ParcelaMaxima), parcelaAtual),
+                    DependentTransactions = dptTransacoesDependentes,
+                    MaturityDate = vb.DataVencimento
+                };
+
+            else
+                transactionRequest = new TransactionRequest()
+                {
+                    SellerMail = sSellerMail,
+                    OrderId = ppb.PedidoID.ToString(),
+                    Free = string.Empty,
+                    Freight = new Decimal(0),
+                    FreightType = string.Empty,
+                    Discount = new Decimal(0),
+                    Addition = new Decimal(0),
+                    UrlReturn = (((vb.TipoPagamento == "24") && (parcelaAtual >= 2)) ? Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCashSGA"]) : Convert.ToString(ConfigurationManager.AppSettings["UrlRetornoBCash"])),
+                    UrlNotification = string.Empty,
+                    Installments = ((vb.TipoPagamento == "23" || vb.TipoPagamento == "24" || vb.Parcela == 0) ? 1 : vb.Parcela),
+                    Currency = CURRENCY,
+                    ViewedContract = true,
+                    AcceptedContract = true,
+                    PaymentMethod = (vb.TipoPagamento == "22" ? new PaymentMethod(SelectCreditCard(vb.cartaoCredito.bandeira)) : new PaymentMethod(PaymentMethodEnum.BANK_SLIP)),
+                    CreditCard = (vb.TipoPagamento == "22" ? GenerateCreditCard(vb) : null),
+                    Buyer = GenerateCustomer(ppb, vb),
+                    Products = GenerateProducts(vb.inscricoes, System.Convert.ToInt32(vb.TipoPagamento), System.Convert.ToInt32(ppb.ParcelaMaxima), parcelaAtual),
+                    DependentTransactions = dptTransacoesDependentes,
+                    MaturityDate = vb.DataVencimento,
+                    BankSlipDescription = BankSlipDescription
+                };
+
+
+            return transactionRequest;
+        }
+
+        private static int SelectCreditCard(string tipo)
+        {
+            int numCartao = 0;
+
+            switch (tipo)
+            {
+                case PagamentoEnum.AMERICAN_EXPRESS:
+                    numCartao = PaymentMethodEnum.AMERICAN_EXPRESS;
+                    break;
+
+                case PagamentoEnum.AURA:
+                    numCartao = PaymentMethodEnum.AURA;
+                    break;
+
+                case PagamentoEnum.DINERS:
+                    numCartao = PaymentMethodEnum.DINERS;
+                    break;
+
+                case PagamentoEnum.ELO:
+                    numCartao = PaymentMethodEnum.ELO;
+                    break;
+
+                case PagamentoEnum.HIPERCARD_EXPRESS:
+                    numCartao = PaymentMethodEnum.HIPERCARD;
+                    break;
+
+                case PagamentoEnum.MASTERCARD:
+                    numCartao = PaymentMethodEnum.MASTERCARD;
+                    break;
+
+                case PagamentoEnum.VISA:
+                    numCartao = PaymentMethodEnum.VISA;
+                    break;
+            }
+
+            return numCartao;
+        }
+
+        private static Customer GenerateCustomer(PedidoParametroBCashPost ppb, VendaBCashDTO vb)
+        {
+            Customer customer = new Customer()
+            {
+                Address = GenerateAddress(ppb, vb),
+                Mail = vb.Aluno.Email,
+                Name = vb.Aluno.Nome,
+                Cpf = vb.Aluno.Cpf,
+                Phone = String.Concat(vb.Aluno.TelResddd, vb.Aluno.TelResNum),
+                CellPhone = String.Concat(vb.Aluno.Celddd, vb.Aluno.CelNum),
+                Gender = Convert.ToChar(vb.Aluno.Sexo),
+                BirthDate = vb.Aluno.DtNascimento.Value,
+                Rg = vb.Aluno.RG
+                //IssueRgDate =  DateTime.Now,
+                //OrganConsignorRg = "SSP",
+                //StateConsignorRg = StateEnum.MINAS_GERAIS,
+                //CompanyName = "Empresa de teste",
+                //Cnpj = "72-139-715/0001-30"
+            };
+
+            return customer;
+        }
+
+        private static Address GenerateAddress(PedidoParametroBCashPost ppb, VendaBCashDTO vb)
+        {
+            Address address = new Address()
+            {
+                address = vb.Aluno.Endereco,
+                Number = vb.Aluno.EndNumero,
+                Complement = vb.Aluno.EndComplemento,
+                Neighborhood = vb.Aluno.EndBairro,
+                City = vb.Aluno.EndCidade,
+                State = vb.Aluno.EndUF,
+                ZipCode = vb.Aluno.Cep
+            };
+
+            return address;
+        }
+
+        private static CreditCard GenerateCreditCard(VendaBCashDTO vb)
+        {
+            CreditCard creditCard = new CreditCard()
+            {
+                Holder = vb.cartaoCredito.nomeTitularCartao,
+                Number = vb.cartaoCredito.numeroCartao,
+                SecurityCode = System.Convert.ToString(vb.cartaoCredito.codigoSeguranca),
+                MaturityMonth = vb.cartaoCredito.vencimentoCartaoMes,
+                MaturityYear = vb.cartaoCredito.vencimentoCartaoAno
+            };
+
+            return creditCard;
+        }
+
+        private static List<Product> GenerateProducts(InscricoesVendaDTO inscricao, System.Int32 tipoPagamento, System.Int32 totalParcelas, System.Int32 parcelaAtual)
+        {
+            List<Product> products = new List<Product>();
+
+            foreach (DTO.InscricaoVendaDTO item in inscricao)
+            {
+                if (item.Valor != 0 || (item.ValorParcelaJaCalculadaPostBcash != null && item.ValorParcelaJaCalculadaPostBcash != 0 && tipoPagamento == DTO.TipoPagamentoDTO.BcashBoletoParcelado))
+                {
+
+                    System.Decimal decValor = Convert.ToDecimal(item.Valor);
+
+                    if (tipoPagamento == DTO.TipoPagamentoDTO.BcashBoletoParcelado)
+                    {
+                        if (item.ValorParcelaJaCalculadaPostBcash == null)
+                            decValor = CalcularValorParcelas(decValor, totalParcelas, parcelaAtual);
+                        else
+                            decValor = item.ValorParcelaJaCalculadaPostBcash.Value;
+                    }
+
+                    Product product = new Product()
+                    {
+                        Code = item.CursoId.ToString(),
+                        Description = item.CursoNome,
+                        Amount = 1,
+                        Value = Decimal.Round(decValor, 2)
+                    };
+
+                    products.Add(product);
+                }
+            }
+
+            return products;
+        }
+
+        public static System.Decimal CalcularValorParcelas(System.Decimal valorTotal, System.Int32 totalParcelas, System.Int32 parcelaAtual)
+        {
+            System.Decimal decValorTotalDividido = System.Math.Round(valorTotal / totalParcelas, 2);
+            if (parcelaAtual == 1) decValorTotalDividido += (valorTotal - (decValorTotalDividido * totalParcelas));
+            return decValorTotalDividido;
+        }
+
+        #endregion
+
+        #region CalculaRepasse
+
+        public static CalculoRepasseDTO CalculaRepasse(decimal valorTotalVendaBruto, int unidadeId, int unidadeIdentificada, int turmaId, DTO.TipoPagamentoDTO.TipoPagamentoBcash tipopagamento, decimal valorDesconto, bool descontoEmPercentual, DateTime? dataPedido)
+        {
+
+            bool isLFGOnline = unidadeId == 211499;
+            
+
+
+            int gradeId = TurmaBLL.ObterTipoCursoCursoGradeTurma(turmaId.ToString()).FirstOrDefault().GradeId;
+            if (dataPedido.Equals(DateTime.MinValue))
+            {
+                dataPedido = null;
+            }
+
+            var gradeUnidade = GradeUnidadeBLL.ObterGradeUnidadePorData(gradeId, unidadeId, dataPedido);
+            decimal porcentagemRepasseLFG = (gradeUnidade.Repasse / 100m);
+            decimal porcentagemRepassePolo = 1 - porcentagemRepasseLFG;
+            DTO.Unidade u = unidadeIdentificada == 0 ? UnidadeBLL.Selecionar(unidadeId) : UnidadeBLL.Selecionar(unidadeIdentificada);
+            if (isLFGOnline)
+            {
+                if (unidadeIdentificada == 0)
+                {
+                    porcentagemRepasseLFG = 1;
+                    porcentagemRepassePolo = 1 - porcentagemRepasseLFG;
+                }
+                else
+                {
+                    ContaBCashDTO unidadeContaBCash = new ContaBCashBLL().Selecionar(unidadeIdentificada, Convert.ToDateTime(dataPedido));
+                    porcentagemRepassePolo = Convert.ToDecimal(unidadeContaBCash.ComissaoPercentual / 100m);
+                    porcentagemRepasseLFG = 1 - porcentagemRepassePolo;
+
+                }
+            }
+            porcentagemRepasseLFG = u.IsUnidadePropria ? 1 : (gradeUnidade.Repasse / 100m);
+            porcentagemRepassePolo = u.IsUnidadePropria ? 0 : 1 - porcentagemRepasseLFG;
+
+            decimal porcentagemDescontoNaVenda = descontoEmPercentual ? valorDesconto / 100m : ((valorDesconto * 100) / valorTotalVendaBruto) / 100;
+            decimal porcentagemTaxaBCash = tipopagamento == TipoPagamentoDTO.TipoPagamentoBcash.Null ? 0 : Convert.ToDecimal(ConfigAppSettingsBLL.BuscarObjetoPorKey(string.Format("TaxaBcash_{0}", (int)tipopagamento)).AppValue) / 100m;
+            int parcelasFaturamento = gradeUnidade.ParcelasRepasse;
+
+            decimal valorTotalVendaLiquido = valorTotalVendaBruto - (valorTotalVendaBruto * porcentagemDescontoNaVenda);
+
+            decimal valorMaximoVenda = gradeUnidade.ValorMaximo * parcelasFaturamento;
+            decimal valorMinimoVenda = gradeUnidade.ValorMinimo * parcelasFaturamento;
+            decimal valorMaximoComAjuste = valorMaximoVenda - (valorMaximoVenda * porcentagemDescontoNaVenda);
+            decimal valorMinimoComAjuste = valorMinimoVenda - (valorMinimoVenda * porcentagemDescontoNaVenda);
+            decimal valorDaTaxaBCash = valorTotalVendaLiquido * porcentagemTaxaBCash;
+            //decimal valorDaTaxaLFG = valorDaTaxaBCash * porcentagemRepasseLFG;
+            //decimal valorDaTaxaPolo = valorDaTaxaBCash * porcentagemRepassePolo;
+            decimal valorLiquidoDaVenda = valorTotalVendaLiquido - valorDaTaxaBCash;
+            decimal valorLFGComTaxa = !u.IsUnidadePropria ?  (valorTotalVendaLiquido * porcentagemRepasseLFG) < valorMinimoComAjuste ? valorMinimoComAjuste
+                                        : (valorTotalVendaLiquido * porcentagemRepasseLFG) > valorMaximoComAjuste ? valorMaximoComAjuste
+                                        : (valorTotalVendaLiquido * porcentagemRepasseLFG) : valorTotalVendaLiquido;
+
+            //decimal valorPoloComTaxa = valorTotalVendaLiquido * porcentagemRepassePolo;
+            decimal valorPoloComTaxa = (valorTotalVendaLiquido - valorLFGComTaxa) < 0 ? 0 : (valorTotalVendaLiquido - valorLFGComTaxa);
+
+            //decimal valorDaTaxaLFG = (valorLFGComTaxa / valorTotalVendaLiquido) * valorDaTaxaBCash;
+            //decimal valorDaTaxaPolo = (valorPoloComTaxa / valorTotalVendaLiquido) * valorDaTaxaBCash;
+            decimal valorDaTaxaLFG = valorTotalVendaLiquido == 0 ? 0 : (valorLFGComTaxa / valorTotalVendaLiquido) * valorDaTaxaBCash;
+            decimal valorDaTaxaPolo = valorTotalVendaLiquido == 0 ? 0 : (valorPoloComTaxa / valorTotalVendaLiquido) * valorDaTaxaBCash;
+
+            decimal valorPoloSemTaxa = valorPoloComTaxa - valorDaTaxaPolo;
+            decimal valorLFGSemTaxa = valorLFGComTaxa - valorDaTaxaLFG;
+
+
+            decimal valorFaturamentoLFGComTaxaBCash = valorTotalVendaLiquido * porcentagemRepasseLFG;
+            decimal valorFaturamentoPoloComTaxaBCash = valorTotalVendaLiquido * porcentagemRepassePolo;
+            decimal valorFaturamentoParcelas = parcelasFaturamento != 0 ? valorFaturamentoLFGComTaxaBCash / parcelasFaturamento : valorFaturamentoLFGComTaxaBCash;
+
+            decimal valorDescontoParceiro = (valorTotalVendaBruto - valorTotalVendaLiquido) * porcentagemRepassePolo;
+
+
+            CalculoRepasseDTO crDTO = new CalculoRepasseDTO();
+            
+
+            if (!u.IsUnidadePropria)
+            { 
+            crDTO.Parcelas = parcelasFaturamento;
+            crDTO.ValorRepasseParceiro = Convert.ToDouble(valorPoloSemTaxa);
+            crDTO.ValorRepasseLFG = Convert.ToDouble(valorLFGComTaxa);
+            crDTO.ValorDescontoBCashParceiro = Convert.ToDouble(valorDaTaxaPolo);
+
+            crDTO.ValorRepasseSemTaxaBcash = Convert.ToDouble(valorLFGSemTaxa);
+            crDTO.ValorVendaParceiroComTaxaBcash = Convert.ToDouble(valorPoloComTaxa);
+            crDTO.ValorTaxaBCashLFG = Convert.ToDouble(valorDaTaxaLFG);
+            crDTO.GradeUnidadeId = gradeUnidade.GradeUnidadeId;
+
+            crDTO.ValorMaximoVenda = Convert.ToDouble(valorMaximoVenda);
+            crDTO.ValorMinimoVenda = Convert.ToDouble(valorMinimoVenda);
+            crDTO.ValorMaximoComAjuste = Convert.ToDouble(valorMaximoComAjuste);
+            crDTO.ValorMinimoComAjuste = Convert.ToDouble(valorMinimoComAjuste);
+            crDTO.ValorDescontoParceiro = Convert.ToDouble(valorDescontoParceiro);
+            }
+            else
+            {
+                crDTO.Parcelas = parcelasFaturamento;
+                crDTO.ValorRepasseParceiro = 0;
+                crDTO.ValorRepasseLFG = Convert.ToDouble(valorLFGComTaxa);
+                crDTO.ValorDescontoBCashParceiro = 0;
+
+                crDTO.ValorRepasseSemTaxaBcash = Convert.ToDouble(valorLFGSemTaxa);
+                crDTO.ValorVendaParceiroComTaxaBcash = 0;
+                crDTO.ValorTaxaBCashLFG = Convert.ToDouble(valorDaTaxaLFG);
+                crDTO.GradeUnidadeId = gradeUnidade.GradeUnidadeId;
+
+                crDTO.ValorMaximoVenda = Convert.ToDouble(valorMaximoVenda);
+                crDTO.ValorMinimoVenda = Convert.ToDouble(valorMinimoVenda);
+                crDTO.ValorMaximoComAjuste = Convert.ToDouble(valorMaximoComAjuste);
+                crDTO.ValorMinimoComAjuste = Convert.ToDouble(valorMinimoComAjuste);
+                crDTO.ValorDescontoParceiro = 0;
+            }
+
+
+            return crDTO;
+        }
+        #endregion
+    }
+}

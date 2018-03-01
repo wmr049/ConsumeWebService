@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="aa0744d3-38a0-492c-83a1-d2bcaf7cd6d2" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://192.168.0.43/Octopus/integracaosga/OctopusSGA.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="OctopusSGA.disco" MetadataType="Disco" ID="6b189563-8a78-414a-82cf-d0a4b11b6ec0" SourceId="1" SourceUrl="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?disco" />
+    <MetadataFile FileName="OctopusSGA.xsd" MetadataType="Schema" ID="adadea77-0afb-41b1-a494-4ec816f597ad" SourceId="1" SourceUrl="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?xsd=xsd2" />
+    <MetadataFile FileName="OctopusSGA1.xsd" MetadataType="Schema" ID="34bf8f3c-f622-4439-9786-98cb37fedb1d" SourceId="1" SourceUrl="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?xsd=xsd0" />
+    <MetadataFile FileName="OctopusSGA.wsdl" MetadataType="Wsdl" ID="d218f14b-4641-447c-8677-5e5e495107a0" SourceId="1" SourceUrl="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?wsdl" />
+    <MetadataFile FileName="OctopusSGA2.xsd" MetadataType="Schema" ID="2a4afcdf-53f0-4da0-b9a1-0d63dee871e4" SourceId="1" SourceUrl="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?xsd=xsd3" />
+    <MetadataFile FileName="OctopusSGA3.xsd" MetadataType="Schema" ID="ba4e3c15-2809-48f7-9580-279f81af5695" SourceId="1" SourceUrl="http://servdesenv2/Octopus/integracaosga/OctopusSGA.svc?xsd=xsd1" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

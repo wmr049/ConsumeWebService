@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section scripts {
+    @Scripts.Render("~/Scripts/Home/Home.js")
+}
+<div class="row">    
+    <div class="col-md-6">
+        <h2>Consume WebService</h2>        
+        <!--div class="form-group col-md-6" >
+            <label>Url WebService<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="urlwebservice" type="text" />            
+        </div>
+        <div class="form-group col-md-6">
+            <label>Método<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="metodo" type="text" />
+        </div-->
+        <div class="form-group col-md-6">
+            <label>Chave<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="chave1" value="username1" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Valor<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="valor1" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Chave<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="chave2" value="password" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Valor<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="valor2" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Chave<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="chave3" value="firstname" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Valor<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="valor3" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Chave<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="chave4" value="lastname" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Valor<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="valor4" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Chave<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="chave5" value="confirmed" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Valor<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="valor5" value="1" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Chave<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="chave6" value="email" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Valor<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="valor6" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Chave<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="chave7" value="idnumber" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Valor<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="valor7" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Chave<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="chave8" value="lang" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <label>Valor<span class="symbol required"></span></label>
+            <input class="form-control input-sm" id="valor8" value="pt_br" type="text" />
+        </div>
+        <div class="form-group col-md-6">
+            <p><a class="btn btn-default" id="btnExecute" title="Executar">Executar &raquo;</a></p>
+        </div>
+    </div>    
+    <div class="col-md-6">
+        <h2>Retorno</h2>
+        <textarea class="form-control input-lg" id="resultado" cols="80" rows="20"> </textarea>
+    </div>
+</div>

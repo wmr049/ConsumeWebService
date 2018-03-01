@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BLL.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="BLL_WsMoodle_LFGWSDLService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://savi.anhangueravirtual.com.br/webservice/soap/index.php</Value>
+    </Setting>
+    <Setting Name="BLL_WsPraetorium_LFGWSDLService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://www.anhangueravirtual.com.br/praetorium/webservice/soap/index.php</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/OP.DTO.ClassesContrato" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/OP.DTO.ClassesContrato" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="RetornoEmitirAutorizacaoCartaoCredito">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:RetornoWSBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CodRetorno" type="xs:int" />
+          <xs:element minOccurs="0" name="DetalheMensagem" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Mensagem" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PagamentoCartaoCreditoId" type="xs:int" />
+          <xs:element minOccurs="0" name="Pedido" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusPagamento" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RetornoEmitirAutorizacaoCartaoCredito" nillable="true" type="tns:RetornoEmitirAutorizacaoCartaoCredito" />
+  <xs:complexType name="RetornoWSBase">
+    <xs:sequence />
+  </xs:complexType>
+  <xs:element name="RetornoWSBase" nillable="true" type="tns:RetornoWSBase" />
+  <xs:complexType name="RetornoEmitirBoleto">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:RetornoWSBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CodRetorno" type="xs:int" />
+          <xs:element minOccurs="0" name="DetalheMensagem" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Mensagem" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="NumPedido" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PagamentoBoletoId" type="xs:int" />
+          <xs:element minOccurs="0" name="StatusPagamento" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="URLImpressao" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RetornoEmitirBoleto" nillable="true" type="tns:RetornoEmitirBoleto" />
+  <xs:complexType name="RetornoEstornoConfirmacaoCredito">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:RetornoWSBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CodRetorno" type="xs:int" />
+          <xs:element minOccurs="0" name="DetalheMensagem" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Mensagem" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PagamentoCartaoCreditoId" type="xs:int" />
+          <xs:element minOccurs="0" name="Pedido" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusPagamento" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RetornoEstornoConfirmacaoCredito" nillable="true" type="tns:RetornoEstornoConfirmacaoCredito" />
+</xs:schema>

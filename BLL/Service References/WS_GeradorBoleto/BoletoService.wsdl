@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GerarBoleto">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="appInfo" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="sacadoInfo" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GerarBoletoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GerarBoletoResult" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="jaImprimiu" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="foraDaData" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GerarBoletoPontualidade">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="appInfo" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="sacadoInfo" type="tns:ArrayOfString" />
+            <s:element minOccurs="1" maxOccurs="1" name="diasAntecipacao" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="valorDescontoPontualidade" type="s:decimal" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GerarBoletoPontualidadeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GerarBoletoPontualidadeResult" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="jaImprimiu" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="foraDaData" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GerarBoletoSoapIn">
+    <wsdl:part name="parameters" element="tns:GerarBoleto" />
+  </wsdl:message>
+  <wsdl:message name="GerarBoletoSoapOut">
+    <wsdl:part name="parameters" element="tns:GerarBoletoResponse" />
+  </wsdl:message>
+  <wsdl:message name="GerarBoletoPontualidadeSoapIn">
+    <wsdl:part name="parameters" element="tns:GerarBoletoPontualidade" />
+  </wsdl:message>
+  <wsdl:message name="GerarBoletoPontualidadeSoapOut">
+    <wsdl:part name="parameters" element="tns:GerarBoletoPontualidadeResponse" />
+  </wsdl:message>
+  <wsdl:portType name="BoletoServiceSoap">
+    <wsdl:operation name="GerarBoleto">
+      <wsdl:input message="tns:GerarBoletoSoapIn" />
+      <wsdl:output message="tns:GerarBoletoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GerarBoletoPontualidade">
+      <wsdl:input message="tns:GerarBoletoPontualidadeSoapIn" />
+      <wsdl:output message="tns:GerarBoletoPontualidadeSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BoletoServiceSoap" type="tns:BoletoServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GerarBoleto">
+      <soap:operation soapAction="http://tempuri.org/GerarBoleto" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GerarBoletoPontualidade">
+      <soap:operation soapAction="http://tempuri.org/GerarBoletoPontualidade" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BoletoServiceSoap12" type="tns:BoletoServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GerarBoleto">
+      <soap12:operation soapAction="http://tempuri.org/GerarBoleto" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GerarBoletoPontualidade">
+      <soap12:operation soapAction="http://tempuri.org/GerarBoletoPontualidade" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BoletoService">
+    <wsdl:port name="BoletoServiceSoap" binding="tns:BoletoServiceSoap">
+      <soap:address location="http://10.100.1.23/WSBoleto/BoletoService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="BoletoServiceSoap12" binding="tns:BoletoServiceSoap12">
+      <soap12:address location="http://10.100.1.23/WSBoleto/BoletoService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

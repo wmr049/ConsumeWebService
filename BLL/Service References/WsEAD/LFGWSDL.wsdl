@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:typens="urn:LFGWSDL" xmlns="http://schemas.xmlsoap.org/wsdl/" name="LFGWSDL" targetNamespace="urn:LFGWSDL" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types />
+  <wsdl:message name="deleteUser">
+    <wsdl:part name="username" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="deleteUserResponse">
+    <wsdl:part name="deleteUserReturn" type="xsd:int" />
+  </wsdl:message>
+  <wsdl:message name="desenrolUserCourse">
+    <wsdl:part name="username1" type="xsd:anyType" />
+    <wsdl:part name="shortname" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="desenrolUserCourseResponse">
+    <wsdl:part name="desenrolUserCourseReturn" type="xsd:int" />
+  </wsdl:message>
+  <wsdl:message name="enrolUserCourse">
+    <wsdl:part name="username1" type="xsd:anyType" />
+    <wsdl:part name="shortname1" type="xsd:anyType" />
+    <wsdl:part name="role" type="xsd:anyType" />
+    <wsdl:part name="groupname" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="enrolUserCourseResponse">
+    <wsdl:part name="enrolUserCourseReturn" type="xsd:int" />
+  </wsdl:message>
+  <wsdl:message name="finalGrade">
+    <wsdl:part name="user" type="xsd:anyType" />
+    <wsdl:part name="course" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="finalGradeResponse">
+    <wsdl:part name="finalGradeReturn" type="xsd:int" />
+  </wsdl:message>
+  <wsdl:message name="insertCourse">
+    <wsdl:part name="params" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="insertCourseResponse">
+    <wsdl:part name="insertCourseReturn" type="xsd:int" />
+  </wsdl:message>
+  <wsdl:message name="insertUser">
+    <wsdl:part name="username1" type="xsd:anyType" />
+    <wsdl:part name="password" type="xsd:anyType" />
+    <wsdl:part name="firstname" type="xsd:anyType" />
+    <wsdl:part name="lastname" type="xsd:anyType" />
+    <wsdl:part name="confirmed" type="xsd:anyType" />
+    <wsdl:part name="email" type="xsd:anyType" />
+    <wsdl:part name="idnumber" type="xsd:anyType" />
+    <wsdl:part name="lang" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="insertUserResponse">
+    <wsdl:part name="insertUserReturn" type="xsd:int" />
+  </wsdl:message>
+  <wsdl:message name="insertUserArray">
+    <wsdl:part name="params1" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="insertUserArrayResponse">
+    <wsdl:part name="insertUserReturn" type="xsd:int" />
+  </wsdl:message>
+  <wsdl:message name="restoreUser">
+    <wsdl:part name="username1" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="restoreUserResponse">
+    <wsdl:part name="restoreUserReturn" type="xsd:int" />
+  </wsdl:message>
+  <wsdl:message name="searchCourse">
+    <wsdl:part name="shortname1" type="xsd:anyType" />
+    <wsdl:part name="return" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="searchCourseResponse">
+    <wsdl:part name="searchCourseReturn" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="searchEnrolment">
+    <wsdl:part name="shortname1" type="xsd:anyType" />
+    <wsdl:part name="role1" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="searchEnrolmentResponse">
+    <wsdl:part name="searchEnrolmentReturn" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="searchRole">
+    <wsdl:part name="role1" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="searchRoleResponse">
+    <wsdl:part name="searchRoleReturn" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="searchUser">
+    <wsdl:part name="username1" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:message name="searchUserResponse">
+    <wsdl:part name="searchUserReturn" type="xsd:anyType" />
+  </wsdl:message>
+  <wsdl:portType name="ServerPortType">
+    <wsdl:operation name="deleteUser">
+      <wsdl:input message="typens:deleteUser" />
+      <wsdl:output message="typens:deleteUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="desenrolUserCourse">
+      <wsdl:input message="typens:desenrolUserCourse" />
+      <wsdl:output message="typens:desenrolUserCourseResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="enrolUserCourse">
+      <wsdl:input message="typens:enrolUserCourse" />
+      <wsdl:output message="typens:enrolUserCourseResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="finalGrade">
+      <wsdl:input message="typens:finalGrade" />
+      <wsdl:output message="typens:finalGradeResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="insertCourse">
+      <wsdl:input message="typens:insertCourse" />
+      <wsdl:output message="typens:insertCourseResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="insertUser">
+      <wsdl:input message="typens:insertUser" />
+      <wsdl:output message="typens:insertUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="insertUserArray">
+      <wsdl:input message="typens:insertUserArray" />
+      <wsdl:output message="typens:insertUserArrayResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="restoreUser">
+      <wsdl:input message="typens:restoreUser" />
+      <wsdl:output message="typens:restoreUserResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="searchCourse">
+      <wsdl:input message="typens:searchCourse" />
+      <wsdl:output message="typens:searchCourseResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="searchEnrolment">
+      <wsdl:input message="typens:searchEnrolment" />
+      <wsdl:output message="typens:searchEnrolmentResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="searchRole">
+      <wsdl:input message="typens:searchRole" />
+      <wsdl:output message="typens:searchRoleResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="searchUser">
+      <wsdl:input message="typens:searchUser" />
+      <wsdl:output message="typens:searchUserResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServerBinding" type="typens:ServerPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <wsdl:operation name="deleteUser">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="desenrolUserCourse">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="enrolUserCourse">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="finalGrade">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insertCourse">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insertUser">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insertUserArray">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="restoreUser">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="searchCourse">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="searchEnrolment">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="searchRole">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="searchUser">
+      <soap:operation soapAction="urn:ServerAction" />
+      <wsdl:input>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="encoded" namespace="urn:LFGWSDL" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LFGWSDLService">
+    <wsdl:port name="ServerPort" binding="typens:ServerBinding">
+      <soap:address location="http://www.anhangueravirtual.com.br/lfg2012/webservice/soap/index.php" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

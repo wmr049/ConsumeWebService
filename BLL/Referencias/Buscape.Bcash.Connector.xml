@@ -1,0 +1,2320 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Buscape.Bcash.Connector</name>
+    </assembly>
+    <members>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.Address">
+            <summary>
+            Dados de endereço.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Address.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Address"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Address.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Address"/>.
+            </summary>
+            <param name="address">Endereço do comprador.</param>
+            <param name="number">Número do endereço.</param>
+            <param name="complement">Complemento do endereço do comprador.</param>
+            <param name="neighborhood">Bairro do comprador.</param>
+            <param name="city">Cidade do comprador.</param>
+            <param name="state">Estado do comprador.</param>
+            <param name="zipCode">CEP do comprador.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Address.address">
+            <summary>
+            Endereço do comprador.
+            Tamanho máximo: 100 caracteres.
+            Campo obrigatório.
+            <example>Ex.: Av. Tiradentes</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Address.Number">
+            <summary>
+            Número do endereço.
+            Tamanho máximo: 10 caracteres.
+            Campo obrigatório.
+            <example>Ex.: 1254</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Address.Complement">
+            <summary>
+            Complemento do endereço do comprador.
+            Tamanho máximo: 80 caracteres.
+            <example>Ex.: Apartamento 10</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Address.Neighborhood">
+            <summary>
+            Bairro do comprador.
+            Tamanho máximo: 50 caracteres.
+            Campo obrigatório.
+            <example>Ex.: Centro</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Address.City">
+            <summary>
+            Cidade do comprador.
+            Tamanho máximo: 255 caracteres.
+            Campo obrigatório.
+            <example>Ex.: São Paulo</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Address.State">
+            <summary>
+            Estado do comprador.
+            Tamanho máximo: 2 caracteres.
+            Campo obrigatório.
+            Vide enum: <see cref="T:Buscape.Bcash.Connector.Domain.Account.StateEnum"/>
+            <example>Ex.: StateEnum.MINAS_GERAIS</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Address.ZipCode">
+            <summary>
+            CEP do comprador.
+            Tamanho máximo: 9 caracteres.
+            Campo obrigatório.
+            <example>Ex.: 17500000</example>
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyRequest">
+            <summary>
+            Classe que contém as informações para requisição de consulta de garantia.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyRequest.#ctor(System.Collections.Generic.List{Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.SearchProduct})">
+            <summary>
+            Contrutor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyRequest"/>.
+            </summary>
+            <param name="products"></param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyRequest.products">
+            <summary>
+            Lista dos produtos que serão consultados.
+            Tamanho máximo: 3 produtos.
+            Campo obrigatório.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse">
+            <summary>
+            Objeto retornado pelo serviço de consulta de conta.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse"/>.
+            </summary>
+            <param name="cpf">CPF consultado.</param>
+            <param name="code">Código de retorno referente ao status da consulta.</param>
+            <param name="message">Descrição de retorno da consulta.</param>
+            <param name="linkContract">Link para a exibição do contrato.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse.Code">
+            <summary>
+            Código de retorno referente ao status da consulta.
+            </summary>
+            <returns>
+            <para>Para 1 registro encontrado: 1.</para>
+            <para>Mais de 1 registro encontrado: 2.</para>
+            <para>Nenhum registro encontrado: 3.</para>
+            </returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse.Message">
+            <summary>
+            Descrição de retorno da consulta.
+            </summary>
+            <returns>
+            <para>Para 1 registro encontrado:
+                  Foi encontrado 1 registro para o CPF informado!</para>
+            <para>Mais de 1 registro encontrado:
+                  Foram encontrados X registros para o CPF informado!</para>
+            <para>Nenhum registro encontrado:
+                  Nenhum registro encontrado para o CPF informado!</para>
+            </returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse.Cpf">
+            <summary>
+            CPF consultado.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse.LinkContract">
+            <summary>
+            Link para a exibição do contrato.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.SearchResponse.Accounts">
+            <summary>
+            Lista de contas encontradas.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.Search.SearchRequest">
+            <summary>
+            Objeto de requisição para o serviço de consulta de contas.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Search.SearchRequest.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Search.SearchRequest"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Search.SearchRequest.#ctor(System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Search.SearchRequest"/>.
+            </summary>
+            <param name="cpf"></param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.SearchRequest.Cpf">
+            <summary>
+            CPF do comprador.
+            Tamanho máximo: 17 caracteres.
+            Campo obrigatório.
+            <example>Ex.: 99999999999</example>
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.SearchProduct">
+            <summary>
+            Contém as informação para consulta do produto.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.SearchProduct.#ctor(System.String,System.Double)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.SearchProduct"/>.
+            </summary>
+            <param name="description">Descrição do produto objeto da consulta.</param>
+            <param name="value">Preço do produto objeto da consulta.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.SearchProduct.description">
+            <summary>
+            Descrição do produto objeto da consulta.
+            <example>Ex.: nokia</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.SearchProduct.value">
+            <summary>
+            Preço do produto objeto da consulta.
+            <example>Ex.: 1550.00</example>
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.ConfigUtil">
+            <summary>
+            Utilitário necessário para carregar as configurações do Connector.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.ConfigUtil.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.ConfigUtil"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.ConfigUtil.LoadConfigKey(System.String)">
+            <summary>
+            Carrega um determinado parâmetro do Config ou utiliza o valor padrão atribuído ao mesmo.
+            </summary>
+            <param name="keyName">Nome da chave no Config.</param>
+            <returns>Valor encontrado para a chave no Config ou o valor padrão da respectiva chave.</returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.UriTransactionCreateService">
+            <summary>
+            URI referente ao endereço do serviço de criação de transações.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.UriAccountSearchCpfService">
+            <summary>
+            URI referente ao endereço do serviço de consulta de contas por CPF.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.UriSearchExtendedWarranty">
+            <summary>
+            URL para consulta de garantia.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.Encoding">
+            <summary>
+            Encoding que será utilizado na aplicação.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.UseProxy">
+            <summary>
+            Indicada se será utilizado um proxy para conexão.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.ProxyHost">
+            <summary>
+            Host do Proxy.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.ProxyPort">
+            <summary>
+            Porta do Proxy.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.MaxProductsAllowed">
+            <summary>
+            Máximo número de produtos presentes no consulta.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.ProxyUser">
+            <summary>
+            Usuário de autenticação do proxy
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.ProxyPassword">
+            <summary>
+            Senha do usuário de autenticação do proxy
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.ConfigUtil.ProxyDomain">
+            <summary>
+            Domínio do usuário de autenticação do proxy
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Authentication.OAuthConstants">
+            <summary>
+            Constantes de autenticação OAuth.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.REALM_PARAM">
+            <summary>
+            REALM_PARAM = "oauth_realm"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.CONSUMER_KEY_PARAM">
+            <summary>
+            CONSUMER_KEY_PARAM = "oauth_consumer_key"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.NONCE_PARAM">
+            <summary>
+            NONCE_PARAM = "oauth_nonce"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.SIGNATURE_PARAM">
+            <summary>
+            SIGNATURE_PARAM = "oauth_signature"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.SIGNATURE_METHOD_PARAM">
+            <summary>
+            SIGNATURE_METHOD_PARAM = "oauth_signature_method"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.TIMESTAMP_PARAM">
+            <summary>
+            TIMESTAMP_PARAM = "oauth_timestamp"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.VERSION_PARAM">
+            <summary>
+            VERSION_PARAM = "oauth_version"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.ATTRIBUTE_SEPARATOR">
+            <summary>
+            ATTRIBUTE_SEPARATOR = ","
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.OAuthConstants.ATTRIBUTE_VALUE_SEPARATOR">
+            <summary>
+            ATTRIBUTE_VALUE_SEPARATOR = "="
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Service.IExtendedWarrantyService">
+            <summary>
+            Cliente para serviços de consulta de garantia estendida.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.IExtendedWarrantyService.SearchExtendedWarranty(Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyRequest,Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth)">
+            <summary>
+            Consulta de Garantia Extendida.
+            </summary>
+            <param name="request">Objeto que contém informações para a consulta da garantia.</param>
+            <param name="basic">Objeto que contém informações de autenticação para consumir o serviço.</param>
+            <returns>Objeto que contém informações de status da transação criada.</returns>
+            <exception cref="!:HttpClientException">Exceção para ações realizadas com o protocolo HTTP.</exception>
+            <exception cref="!:ConnectionException">Exceção quando houver problema na comunicação com o serviço.</exception>
+            <exception cref="!:ServiceException">Exceção em caso de parâmentros inconsistentes.
+                Obs.: A lista de erros pode ser capturada através da propriedade 'Errors' desta exceção.</exception>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.FreightTypeEnum">
+            <summary>
+            Tipos de frete disponíveis.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.FreightTypeEnum.SEDEX">
+            <summary>
+            Tipo de frete = "SEDEX"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.FreightTypeEnum.PAC">
+            <summary>
+            Tipo de frete = "PAC"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.FreightTypeEnum.ENCOMENDA">
+            <summary>
+            Tipo de frete = "ENCOMENDA"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.FreightTypeEnum.CARTA_REGISTRADA">
+            <summary>
+            Tipo de frete = "CARTA_REGISTRADA"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.FreightTypeEnum.E_SEDEX">
+            <summary>
+            Tipo de frete = "E_SEDEX"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.FreightTypeEnum.TRANSPORTADORA">
+            <summary>
+            Tipo de frete = "TRANSPORTADORA"
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.StateEnum">
+            <summary>
+            Estados disponíveis.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.ACRE">
+            <summary>
+            ACRE = "AC"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.ALAGOAS">
+            <summary>
+            ALAGOAS = "AL"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.AMAPA">
+            <summary>
+            AMAPA = "AP"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.AMAZONAS">
+            <summary>
+            AMAZONAS = "AM"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.BAHIA">
+            <summary>
+            BAHIA = "BA"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.CEARA">
+            <summary>
+            CEARA = "CE"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.DISTRITO_FEDERAL">
+            <summary>
+            DISTRITO_FEDERAL = "DF"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.ESPIRITO_SANTO">
+            <summary>
+            ESPIRITO_SANTO = "ES"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.GOIAS">
+            <summary>
+            GOIAS = "GO"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.MARANHAO">
+            <summary>
+            MARANHAO = "MA"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.MATO_GROSSO">
+            <summary>
+            MATO_GROSSO = "MT"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.MATO_GROSSO_DO_SUL">
+            <summary>
+            MATO_GROSSO_DO_SUL = "MS"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.MINAS_GERAIS">
+            <summary>
+            MINAS_GERAIS = "MG"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.PARA">
+            <summary>
+            PARA = "PA"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.PARAIBA">
+            <summary>
+            PARAIBA = "PB"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.PARANA">
+            <summary>
+            PARANA = "PR"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.PERNAMBUCO">
+            <summary>
+            PERNAMBUCO = "PE"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.PIAUI">
+            <summary>
+            PIAUI = "PI"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.RIO_DE_JANEIRO">
+            <summary>
+            RIO_DE_JANEIRO = "RJ"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.RIO_GRANDE_DO_NORTE">
+            <summary>
+            RIO_GRANDE_DO_NORTE = "RN"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.RIO_GRANDE_DO_SUL">
+            <summary>
+            RIO_GRANDE_DO_SUL = "RS"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.RONDONIA">
+            <summary>
+            RONDONIA = "RO"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.RORAIMA">
+            <summary>
+            RORAIMA = "RR"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.SANTA_CATARINA">
+            <summary>
+            SANTA_CATARINA = "SC"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.SAO_PAULO">
+            <summary>
+            SAO_PAULO = "SP"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.SERGIPE">
+            <summary>
+            SERGIPE = "SE"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.StateEnum.TOCANTINS">
+            <summary>
+            TOCANTINS = "TO"
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Authentication.AuthBasicUtils">
+            <summary>
+            Utilitários para autenticação básica (AuthBasic).
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Authentication.AuthBasicUtils.GenerateAuthenticationBasic(System.String,System.String,System.String)">
+            <summary>
+            Gera o cabeçalho de autenticação básica.
+            </summary>
+            <param name="authenticateType">Tipo de Autenticação.</param>
+            <param name="keyAccess">Chave de acesso para autenticação.</param>
+            <param name="mail">Email para autenticação.</param>
+            <returns>Cabeçalho de autenticação básica.</returns>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Authentication.AuthConstants">
+            <summary>
+            Constantes de autenticação.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Authentication.AuthConstants.AUTHORIZATION">
+            <summary>
+            AUTHORIZATION = "Authorization"
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Json.DateTimeConverter">
+            <summary>
+            Conversor JSON personalizado para tipos DateTime.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Json.DateTimeConverter.CanConvert(System.Type)">
+            <summary>
+            Verifica se é possível efetuar a conversão
+            </summary>
+            <param name="objectType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Json.DateTimeConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            Método de leitura de objetos Json
+            </summary>
+            <param name="reader"></param>
+            <param name="objectType"></param>
+            <param name="existingValue"></param>
+            <param name="serializer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Json.DateTimeConverter.WriteJson(Newtonsoft.Json.JsonWriter,System.Object,Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            Método de escrito de objetos JSon
+            </summary>
+            <param name="writer"></param>
+            <param name="value"></param>
+            <param name="serializer"></param>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.ProductsExceededException">
+            <summary>
+            Notificação de número de produtos excedido.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ExtendedWarranty.ProductsExceededException.#ctor(System.Int32)">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.ProductsExceededException"/>.
+            </summary>
+            <param name="noMax"></param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.ProductsExceededException.maxProductsAllowed">
+            <summary>
+            Número máximo de produtos permitido por consulta
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Cryptography.CryptographyException">
+            <summary>
+            Exceção de criptografia.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Cryptography.CryptographyException.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Cryptography.CryptographyException"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Cryptography.CryptographyException.#ctor(System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Cryptography.CryptographyException"/>.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Cryptography.CryptographyException.#ctor(System.String,System.Exception)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Cryptography.CryptographyException"/>.
+            </summary>
+            <param name="message"></param>
+            <param name="inner"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Cryptography.CryptographyException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Cryptography.CryptographyException"/>.
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Service.Exception.ServiceException">
+            <summary>
+            Exceção para camada de serviço.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Exception.ServiceException.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Service.Exception.ServiceException"/>
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Exception.ServiceException.#ctor(Buscape.Bcash.Connector.Domain.ErrorList)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Service.Exception.ServiceException"/>
+            </summary>
+            <param name="errors"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Exception.ServiceException.#ctor(System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Service.Exception.ServiceException"/>
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Exception.ServiceException.#ctor(System.String,System.Exception)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Service.Exception.ServiceException"/>
+            </summary>
+            <param name="message"></param>
+            <param name="inner"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Exception.ServiceException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Service.Exception.ServiceException"/>
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Exception.ServiceException.AddError(Buscape.Bcash.Connector.Domain.ResponseError)">
+            <summary>
+            Adiciona <see cref="T:Buscape.Bcash.Connector.Domain.ResponseError"/> na lista de erros.
+            </summary>
+            <param name="responseError">Objeto <see cref="T:Buscape.Bcash.Connector.Domain.ResponseError"/> contendo o erro.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Service.Exception.ServiceException.Errors">
+            <summary>
+            Lista de erros contendo informações da inconsistência dos parâmetros ao consumir o serviço.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.CurrencyEnum">
+            <summary>
+            Tipos de moedas disponíveis.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.CurrencyEnum.REAL">
+            <summary>
+            Moeda brasileira = "BRL"
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyResponse">
+            <summary>
+            Classe que contem as informações da resposta da consulta de GE.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyResponse.#ctor(System.Int32,System.Collections.Generic.List{Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts})">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyResponse"/>.
+            </summary>
+            <param name="code"></param>
+            <param name="products"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyResponse.productsByDescrition">
+            <summary>
+            Método que retorna um dicionário para acesso 
+            as respostas dos produtos consultados
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyResponse.code">
+            <summary>
+            Código de resposta
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyResponse.products">
+            <summary>
+            Lista com os status das requisições de garantia estendida.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.ErrorList">
+            <summary>
+            Objeto que representa a lista de erros retornados pelo serviço.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ErrorList.List">
+            <summary>
+            Lista de erros retornados pelo serviço.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction">
+            <summary>
+            Dados para transação dependente.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction.#ctor(System.String,System.Decimal)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction"/>.
+            </summary>
+            <param name="email">Email da conta dependente.</param>
+            <param name="value">Valor monetário da transação dependente.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction.Email">
+            <summary>
+            Email da conta dependente.
+            Tamanho máximo: 80 caracteres.
+            <example>Ex.: empresa@provedor.com</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction.Value">
+            <summary>
+            Valor monetário da transação dependente.
+            <example>Ex.: 10.95</example>
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Cryptography.IEncrypter">
+            <summary>
+            Interface para string encrypter.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Cryptography.IEncrypter.Encrypt(System.String)">
+            <summary>
+            Realiza a criptografia na String informada como parâmetro.
+            </summary>
+            <param name="value">String para criptografia.</param>
+            <returns>Valor referente a criptografia da String informada como parâmetro.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Cryptography.IEncrypter.Encrypt(System.String,System.String)">
+            <summary>
+            Realiza a criptografia na String informada como parâmetro, de acordo com uma chave.
+            </summary>
+            <param name="value">String para criptografia.</param>
+            <param name="secretKey">Chave para criptografia.</param>
+            <returns>Valor referente a criptografia da String informada como parâmetro, de acordo com a Chave informada.</returns>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Http.Exception.HttpClientException">
+            <summary>
+            Exceção para ações realizadas com o protocolo HTTP.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.HttpClientException.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.HttpClientException"/>
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.HttpClientException.#ctor(System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.HttpClientException"/>
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.HttpClientException.#ctor(System.String,System.Exception)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.HttpClientException"/>
+            </summary>
+            <param name="message"></param>
+            <param name="inner"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.HttpClientException.#ctor(System.Net.HttpStatusCode,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.HttpClientException"/>
+            </summary>
+            <param name="httpCode"></param>
+            <param name="responseBody"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.HttpClientException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.HttpClientException"/>
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Exception.HttpClientException.HttpCode">
+            <summary>
+            Código do Status HTTP.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Exception.HttpClientException.ResponseBody">
+            <summary>
+            Resposta da Requisição HTTP.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter">
+            <summary>
+            Client para comunicação através do protoloco HTTP.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Http.IHttpClient">
+            <summary>
+            Interface para requisições HTTP.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.IHttpClient.Post(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Envia uma requisição POST para a URI informada.
+            </summary>
+            <param name="uri">URI para requisição.</param>
+            <param name="param">Um dicionário com os parâmetros de requisição.</param>
+            <returns>O resultado é o objeto <see cref="T:Buscape.Bcash.Connector.Http.Client.HttpClientResponse"/> que contém o
+            código http de retorno, a mensagem do código e o texto da resposta.</returns>
+            <exception cref="!:HttpClientException">Quando o retorno HTTP não é um código 200. A exceção contém 
+            o código HTTP e o texto do corpo da respota.</exception>
+            <exception cref="!:ConnectionException">Quando não foi possível realizar a conexão com o(s) serviço(s).</exception>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.IHttpClient.Post(System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Envia uma requisição POST para a URI informada.
+            </summary>
+            <param name="uri">URI para requisição.</param>
+            <param name="param">Um dicionário com os parâmetros de requisição.</param>
+            <param name="header">Um dicionário com informações a serem colocadas no cabeçalho da requisição.</param>
+            <returns>O resultado é o objeto <see cref="T:Buscape.Bcash.Connector.Http.Client.HttpClientResponse"/> que contém o
+            código http de retorno, a mensagem do código e o texto da resposta.</returns>
+            <exception cref="!:HttpClientException">Quando o retorno HTTP não é um código 200. A exceção contém 
+            o código HTTP e o texto do corpo da respota.</exception>
+            <exception cref="!:ConnectionException">Quando não foi possível realizar a conexão com o(s) serviço(s).</exception>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.IHttpClient.SetAcceptedReturnCodes(System.Collections.Generic.List{System.Net.HttpStatusCode})">
+            <summary>
+            Códigos <see cref="T:System.Net.HttpStatusCode"/> aceitos como retorno.
+            </summary>
+            <param name="acceptedReturnCodes">Lista com os HttpStatusCode aceitos.</param>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.SYSTEM_ERROR">
+            <summary>
+            SYSTEM_ERROR = "Ocorreu um erro no sistema."
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.SERVICE_UNAVAILABLE">
+            <summary>
+            SERVICE_UNAVAILABLE = "Serviço indisponível."
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.INVALID_HOST">
+            <summary>
+            INVALID_HOST = "Host inválido."
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.REQUIRED_HOST">
+            <summary>
+            REQUIRED_HOST = "Host não informado."
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.INVALID_PROXY">
+            <summary>
+            INVALID_PROXY = "Proxy inválido."
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.CHARSET_DEFAULT">
+            <summary>
+            CHARSET_DEFAULT = "utf-8"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.HEADER_REDIRECT">
+            <summary>
+            HEADER_REDIRECT = "Location"
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.Create">
+            <summary>
+            Cria uma instância do client HTTP.
+            </summary>
+            <returns>Instância do client HTTP.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.Create(System.String)">
+            <summary>
+            Cria uma instância do client HTTP de acordo com o Charset informado.
+            </summary>
+            <param name="charset">Charset utilizado na aplicação.</param>
+            <returns>Instância do client HTTP.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.Create(System.String,System.String,System.Int32)">
+            <summary>
+            Cria uma instância do client HTTP de acordo com o Charset, ProxyHost e ProxyPort informados.
+            </summary>
+            <param name="charset">Charset utilizado na aplicação.</param>
+            <param name="proxyHost">Host do proxy.</param>
+            <param name="proxyPort">Porta do proxy.</param>
+            <returns>Instância do client HTTP.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.Create(System.String,System.String,System.Int32,System.String,System.String,System.String)">
+            <summary>
+            Cria uma instância do client HTTP de acordo com o Charset, ProxyHost, ProxyPort, proxyUser, proxyPassword e proxyDomain informados.
+            </summary>
+            <param name="charset">Charset utilizado na aplicação.</param>
+            <param name="proxyHost">Host do proxy.</param>
+            <param name="proxyPort">Porta do proxy.</param>
+            <param name="proxyUser">Usuário de autenticação do proxy.</param>
+            <param name="proxyPassword">Senha do usuário do proxy.</param>
+            <param name="proxyDomain">Domínio de rede do usuário do proxy.</param>
+            <returns>Instância do client HTTP.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.Create(System.String,System.String,System.Int32,System.String,System.String)">
+            <summary>
+            Cria uma instância do client HTTP de acordo com o Charset, ProxyHost, ProxyPort, proxyUser e proxyPassword informados.
+            </summary>
+            <param name="charset">Charset utilizado na aplicação.</param>
+            <param name="proxyHost">Host do proxy.</param>
+            <param name="proxyPort">Porta do proxy.</param>
+            <param name="proxyUser">Usuário de autenticação do proxy.</param>
+            <param name="proxyPassword">Senha do usuário do proxy.</param>
+            <returns>Instância do client HTTP.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.Post(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Envia uma requisição POST para a URI informada.
+            </summary>
+            <param name="uri">URI para requisição.</param>
+            <param name="param">Um dicionário com os parâmetros de requisição.</param>
+            <returns>O resultado é o objeto <see cref="T:Buscape.Bcash.Connector.Http.Client.HttpClientResponse"/> que contém o
+            código http de retorno, a mensagem do código e o texto da resposta.</returns>
+            <exception cref="T:Buscape.Bcash.Connector.Http.Exception.HttpClientException">Quando o retorno HTTP não é um código 200. A exceção contém 
+            o código HTTP e o texto do corpo da respota.</exception>
+            <exception cref="T:Buscape.Bcash.Connector.Http.Exception.ConnectionException">Quando não foi possível realizar a conexão com o(s) serviço(s).</exception>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.Post(System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Envia uma requisição POST para a URI informada.
+            </summary>
+            <param name="uri">URI para requisição.</param>
+            <param name="param">Um dicionário com os parâmetros de requisição.</param>
+            <param name="header">Um dicionário com informações a serem colocadas no cabeçalho da requisição.</param>
+            <returns>O resultado é o objeto <see cref="T:Buscape.Bcash.Connector.Http.Client.HttpClientResponse"/> que contém o
+            código http de retorno, a mensagem do código e o texto da resposta.</returns>
+            <exception cref="T:Buscape.Bcash.Connector.Http.Exception.HttpClientException">Quando o retorno HTTP não é um código 200. A exceção contém 
+            o código HTTP e o texto do corpo da respota.</exception>
+            <exception cref="T:Buscape.Bcash.Connector.Http.Exception.ConnectionException">Quando não foi possível realizar a conexão com o(s) serviço(s).</exception>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.ValidadeHost(System.String)">
+            <summary>
+            Valida o Host informado.
+            </summary>
+            <param name="uri">URI para validação.</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.SetAcceptedReturnCodes(System.Collections.Generic.List{System.Net.HttpStatusCode})">
+            <summary>
+            Códigos <see cref="T:System.Net.HttpStatusCode"/> aceitos como retorno.
+            </summary>
+            <param name="acceptedReturnCodes">Lista com os HttpStatusCode aceitos.</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.GetRequestParams(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Recupera a string de parâmetros.
+            </summary>
+            <param name="param">Parâmetros da requisição.</param>
+            <returns>String de parâmetros.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.SetRequestHeader(System.Net.HttpWebRequest,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Configura o cabeçalho da requisição.
+            </summary>
+            <param name="request">Objeto de requisição.</param>
+            <param name="header">Cabeçalho da requisição.</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.ConfigureProxy(System.Net.HttpWebRequest)">
+            <summary>
+            Configura o proxy do cliente.
+            </summary>
+            <param name="request">Objeto de requisição.</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.ReadResponse(System.Net.HttpWebResponse,System.Collections.Generic.Dictionary{System.String,System.String},System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Efetua a leitura da resposta da requisição HTTP.
+            </summary>
+            <param name="response">Resposta HTTP.</param>
+            <param name="param">Parâmetros do POST atual para casos de redirect.</param>
+            <param name="header">Cabeçalho do POST atual para casos de redirect.</param>
+            <returns>Resposta do cliente.</returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.UseProxy">
+            <summary>
+            Indica se será utilizado Proxy na conexão.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.ProxyHost">
+            <summary>
+            Host do proxy.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.ProxyPort">
+            <summary>
+            Porta do proxy.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.Charset">
+            <summary>
+            Charset utilizado na aplicação.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Client.HttpClientAdapter.AcceptedReturnCodes">
+            <summary>
+            Códigos de Status HTTP aceitos como resposta.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse">
+            <summary>
+            Objeto de resposta para o serviço de criação da transação.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse.#ctor(System.Int64,System.String,System.Int32,System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse"/>.
+            </summary>
+            <param name="transactionId">Identificador da transação no Pagamento Digital.</param>
+            <param name="orderId">Identificador da transação enviada pela loja.</param>
+            <param name="status">Código do status da transação.</param>
+            <param name="descriptionStatus">Descrição do status da transação.</param>
+            <param name="paymentLink">Link para pagamento.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse.TransactionId">
+            <summary>
+            Identificador da transação no Pagamento Digital.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse.OrderId">
+            <summary>
+            Identificador da transação enviada pela loja.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse.Status">
+            <summary>
+            Código do status da transação.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse.DescriptionStatus">
+            <summary>
+            Descrição do status da transação.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionResponse.PaymentLink">
+            <summary>
+            Link para pagamento.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest">
+            <summary>
+            Objeto de requisição para o serviço de criação da transação.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.#ctor(System.String,System.String,System.String,Buscape.Bcash.Connector.Domain.Account.Customer,System.String,System.Decimal,System.String,System.Decimal,System.Decimal,Buscape.Bcash.Connector.Domain.Account.PaymentMethod,System.String,System.String,System.Collections.Generic.List{Buscape.Bcash.Connector.Domain.Transaction.Product},System.Int32,Buscape.Bcash.Connector.Domain.Transaction.CreditCard,System.String,System.Boolean,System.Boolean,System.Int32,System.Collections.Generic.List{Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction})">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest"/>.
+            </summary>
+            <param name="sellerMail">E-mail da loja cadastrada no Pagamento Digital.</param>
+            <param name="ipSeller">Endereço de IP da loja.</param>
+            <param name="orderId">Código do pedido atribuído pela loja.</param>
+            <param name="buyer">Objeto <see cref="T:Buscape.Bcash.Connector.Domain.Account.Customer"/>.</param>
+            <param name="free">Campo de Livre Digitação. Pode ser utilizado para algum parâmetro adicional de identificação da venda.</param>
+            <param name="freight">Valor do frete.</param>
+            <param name="freightType">Tipo do frete.</param>
+            <param name="discount">Valor total do desconto atribuído pela loja.</param>
+            <param name="addition">Valor total do acréscimo feito pela loja.</param>
+            <param name="paymentMethod">Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.PaymentMethod"/>.</param>
+            <param name="urlReturn">URL que direciona o usuário para a loja.</param>
+            <param name="urlWarning">URL que a loja irá receber as informações de alteração de status da transação.</param>
+            <param name="products">Lista de produtos.</param>
+            <param name="installments">Quantidade de Parcelas em que a compra será processada.</param>
+            <param name="creditCard">Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.CreditCard"/>.</param>
+            <param name="currency">Moeda utilizada para a transação.</param>
+            <param name="acceptedContract">Loja informa se o comprador aceitou os termos do contrato.</param>
+            <param name="viewedContract">Loja informa se o comprador visualizou os termos do contrato.</param>
+            <param name="campaignId">Identificador da campanha da loja no Pagamento Digital.</param>
+            <param name="dependentTransactions">Lista de transações dependentes.</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.#ctor(System.String,System.String,System.String,Buscape.Bcash.Connector.Domain.Account.Customer,System.String,System.Decimal,System.String,System.Decimal,System.Decimal,Buscape.Bcash.Connector.Domain.Account.PaymentMethod,System.String,System.String,System.Collections.Generic.List{Buscape.Bcash.Connector.Domain.Transaction.Product},System.Int32,Buscape.Bcash.Connector.Domain.Transaction.CreditCard,System.String,System.Boolean,System.Boolean,System.Int32,System.Collections.Generic.List{Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction},System.Int32)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest"/>.
+            </summary>
+            <param name="sellerMail">E-mail da loja cadastrada no Pagamento Digital.</param>
+            <param name="ipSeller">Endereço de IP da loja.</param>
+            <param name="orderId">Código do pedido atribuído pela loja.</param>
+            <param name="buyer">Objeto <see cref="T:Buscape.Bcash.Connector.Domain.Account.Customer"/>.</param>
+            <param name="free">Campo de Livre Digitação. Pode ser utilizado para algum parâmetro adicional de identificação da venda.</param>
+            <param name="freight">Valor do frete.</param>
+            <param name="freightType">Tipo do frete.</param>
+            <param name="discount">Valor total do desconto atribuído pela loja.</param>
+            <param name="addition">Valor total do acréscimo feito pela loja.</param>
+            <param name="paymentMethod">Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.PaymentMethod"/>.</param>
+            <param name="urlReturn">URL que direciona o usuário para a loja.</param>
+            <param name="urlWarning">URL que a loja irá receber as informações de alteração de status da transação.</param>
+            <param name="products">Lista de produtos.</param>
+            <param name="installments">Quantidade de Parcelas em que a compra será processada.</param>
+            <param name="creditCard">Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.CreditCard"/>.</param>
+            <param name="currency">Moeda utilizada para a transação.</param>
+            <param name="acceptedContract">Loja informa se o comprador aceitou os termos do contrato.</param>
+            <param name="viewedContract">Loja informa se o comprador visualizou os termos do contrato.</param>
+            <param name="campaignId">Identificador da campanha da loja no Pagamento Digital.</param>
+            <param name="dependentTransactions">Lista de transações dependentes.</param>
+            <param name="platformId">Id de plataforma</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.#ctor(System.String,System.String,System.String,Buscape.Bcash.Connector.Domain.Account.Customer,System.String,System.Decimal,System.String,System.Decimal,System.Decimal,Buscape.Bcash.Connector.Domain.Account.PaymentMethod,System.String,System.String,System.Collections.Generic.List{Buscape.Bcash.Connector.Domain.Transaction.Product},System.Int32,Buscape.Bcash.Connector.Domain.Transaction.CreditCard,System.String,System.Boolean,System.Boolean,System.Int32,System.Collections.Generic.List{Buscape.Bcash.Connector.Domain.Transaction.DependentTransaction},System.Int32,System.DateTime,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest"/>.
+            </summary>
+            <param name="sellerMail">E-mail da loja cadastrada no Pagamento Digital.</param>
+            <param name="ipSeller">Endereço de IP da loja.</param>
+            <param name="orderId">Código do pedido atribuído pela loja.</param>
+            <param name="buyer">Objeto <see cref="T:Buscape.Bcash.Connector.Domain.Account.Customer"/>.</param>
+            <param name="free">Campo de Livre Digitação. Pode ser utilizado para algum parâmetro adicional de identificação da venda.</param>
+            <param name="freight">Valor do frete.</param>
+            <param name="freightType">Tipo do frete.</param>
+            <param name="discount">Valor total do desconto atribuído pela loja.</param>
+            <param name="addition">Valor total do acréscimo feito pela loja.</param>
+            <param name="paymentMethod">Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.PaymentMethod"/>.</param>
+            <param name="urlReturn">URL que direciona o usuário para a loja.</param>
+            <param name="urlWarning">URL que a loja irá receber as informações de alteração de status da transação.</param>
+            <param name="products">Lista de produtos.</param>
+            <param name="installments">Quantidade de Parcelas em que a compra será processada.</param>
+            <param name="creditCard">Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.CreditCard"/>.</param>
+            <param name="currency">Moeda utilizada para a transação.</param>
+            <param name="acceptedContract">Loja informa se o comprador aceitou os termos do contrato.</param>
+            <param name="viewedContract">Loja informa se o comprador visualizou os termos do contrato.</param>
+            <param name="campaignId">Identificador da campanha da loja no Pagamento Digital.</param>
+            <param name="dependentTransactions">Lista de transações dependentes.</param>
+            <param name="platformId">Id de plataforma</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.SellerMail">
+            <summary>
+            E-mail da loja cadastrada no Pagamento Digital.
+            Tamanho máximo: 80 caracteres.
+            Campo obrigatório.
+            <example>Ex.: empresa@provedor.com</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.IpSeller">
+            <summary>
+            Endereço de IP da loja.
+            Tamanho máximo: 40 caracteres.
+            Campo obrigatório.
+            <example>Ex.: 169.254.57.175</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.OrderId">
+            <summary>
+            Código do pedido atribuído pela loja.
+            Tamanho máximo: 50 caracteres.
+            <example>Ex.: 123</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.Buyer">
+            <summary>
+            Objeto <see cref="T:Buscape.Bcash.Connector.Domain.Account.Customer"/>.
+            Campo obrigatório.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.Free">
+            <summary>
+            Campo de Livre Digitação. Pode ser utilizado para algum parâmetro adicional de identificação da venda.
+            Tamanho máximo: 255 caracteres.
+            <example>Ex.: Compra teste</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.Freight">
+            <summary>
+            Valor do frete.
+            <example>Ex.: 10.95</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.FreightType">
+             <summary>
+             Tipo do frete.
+            
+             *Vide enum: <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.FreightTypeEnum"/>.
+             <example>Ex.: FreightTypeEnum.SEDEX</example>
+             </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.Discount">
+            <summary>
+            Valor total do desconto atribuído pela loja.
+            <example>Ex.: 2.25</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.Addition">
+            <summary>
+            Valor total do acréscimo feito pela loja.
+            <example>Ex.: 2.25</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.PaymentMethod">
+            <summary>
+            Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.PaymentMethod"/>.
+            Campo obrigatório.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.UrlReturn">
+            <summary>
+            URL que direciona o usuário para a loja.
+            Tamanho máximo: 255 caracteres.
+            <example>Ex.: http://www.pagamentodigital.com.br/loja/retorno.php </example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.UrlNotification">
+            <summary>
+            URL que a loja irá receber as informações de alteração de status da transação.
+            Tamanho máximo: 255 caracteres.
+            <example>Ex.: http://www.pagamentodigital.com.br/loja/aviso.php </example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.Products">
+            <summary>
+            Lista de produtos.
+            Campo obrigatório.
+            
+            *Obs.: Preencher a lista com o objeto <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Product"/>.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.Installments">
+            <summary>
+            Quantidade de Parcelas em que a compra será processada.
+            <example>Ex.: 5</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.CreditCard">
+            <summary>
+            Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.CreditCard"/>.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.Currency">
+            <summary>
+            Moeda utilizada para a transação.
+            Tamanho máximo: 3 caracteres.
+            
+            *Vide enum: <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.CurrencyEnum"/>.
+            <example>Ex.: CurrencyEnum.REAL</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.AcceptedContract">
+            <summary>
+            Loja informa se o comprador aceitou os termos do contrato.
+            <example>Ex.: Boolean.TRUE</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.ViewedContract">
+            <summary>
+            Loja informa se o comprador visualizou os termos do contrato.
+            <example>Ex.: Boolean.TRUE</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.CampaignId">
+            <summary>
+            Identificador da campanha da loja no Pagamento Digital.
+            <example>Ex.: 123</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.DependentTransactions">
+            <summary>
+            Lista de transações dependentes.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.PlatformId">
+            <summary>
+            Identificador da plataforma
+            <example>platformId: 422 (Flagme)</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.MaturityDate">
+            <summary>
+            Data de vencimento do boleto
+            <example>dd/mm/aaaa</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest.BankSlipDescription">
+            <summary>
+            Anotação/Descrição do boleto
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty">
+            <summary>
+            Classe que contém as informações de GE para a transação.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty.#ctor(System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty"/>.
+            </summary>
+            <param name="monthWarranty">Meses da garantia extendida</param>
+            <param name="amount">Quantidade de garantias estendidas</param>
+            <param name="brand">Marca do produto</param>
+            <param name="token">Token retorna do na consulta de Garantia Estendida <see cref="!:ExtendedWarrantyService"/>.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty.monthWarranty">
+            <summary>
+            Meses da garantia extendida
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty.amount">
+            <summary>
+            Quantidade de garantias estendidas
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty.brand">
+            <summary>
+            Marca do produto
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty.token">
+            <summary>
+            Token retorna do na consulta de Garantia Estendida <see cref="!:ExtendedWarrantyService"/>.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts">
+            <summary>
+            Classe que contem os produtos da resposta da consulta de GE.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts.#ctor(System.String,System.Decimal,System.Boolean,System.String,System.Decimal,System.String)">
+            <summary>
+            Construtos da classe <see cref="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts"/>.
+            </summary>
+            <param name="description"></param>
+            <param name="value"></param>
+            <param name="extendedWarranty"></param>
+            <param name="extendedWarrantyMessage"></param>
+            <param name="valueExtendedWarranty"></param>
+            <param name="token"></param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts.description">
+            <summary>
+            Mesmo valor da descrição contida na requisição
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts.value">
+            <summary>
+            Mesmo valor do preço contido na requisição
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts.extendedWarranty">
+            <summary>
+            Identifica se existe ou não garantia estendida para o presente produto
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts.extendedWarrantyMessage">
+            <summary>
+            Mensagem informativa sobre a situação da consulta
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts.valueExtendedWarranty">
+            <summary>
+            Valor da garantia estendida para o produto e preço informados
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ResponseProducts.token">
+            <summary>
+            Token usado para efetuar a transação.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.GenderEnum">
+            <summary>
+            Sexos disponíveis.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.GenderEnum.MALE">
+            <summary>
+            Sexo masculino = 'M'
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Account.GenderEnum.FEMALE">
+            <summary>
+            Sexo feminino = 'F'
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService">
+            <summary>
+            Serviço de Consulta de Garantia Estendida.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.DATA_PARAM">
+            <summary>
+            DATA_PARAM = "data"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.ENCODING_PARAM">
+            <summary>
+            ENCODING_PARAM = "encode"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.ENCODING">
+            <summary>
+            ENCODING = "UTF-8"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.API_VERSION_PARAM">
+            <summary>
+            API_VERSION_PARAM = "version"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.API_VERSION">
+            <summary>
+            API_VERSION = "1.0"
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.#ctor">
+            <summary>
+            Construtor padrão do serviço <see cref="T:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.SearchExtendedWarranty(Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.ExtendedWarrantyRequest,Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth)">
+            <summary>
+            Verifica se existe garantia estendida para os produtos referidos.
+            </summary>
+            <param name="request">Objeto que contém informações para a busca.</param>
+            <param name="auth">Objeto que contém informações de autenticação para consumir o serviço.</param>
+            <returns>Objeto que contém informações da busca e uma lista de contas.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.GetParams(System.String)">
+            <summary>
+            Obtém o dicionário de parêmetros.
+            </summary>
+            <param name="data">String JSON contendo os dados da requisição.</param>
+            <returns>Dicionário preenchido com os Parâmetros e Valores.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.GetAuthBasicHeader(Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth)">
+            <summary>
+            Obtém o dicionário do cabeçalho de autenticação.
+            </summary>
+            <param name="authBasic">Objeto de dados para autenticação básica.</param>
+            <returns>Dicionário preenchido com os Parâmetros e Valores.</returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Service.ExtendedWarranty.ExtendedWarrantyService.HttpClient">
+            <summary>
+            Client para requisições HTTP.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Service.Account.AccountService">
+            <summary>
+            Serviço de Conta.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Service.IAccountService">
+            <summary>
+            Cliente para serviços de conta.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.IAccountService.SearchAccounts(Buscape.Bcash.Connector.Domain.Account.Search.SearchRequest,Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData)">
+            <summary>
+            Busca todas as contas vinculadas com o CPF informado.
+            </summary>
+            <param name="request">Objeto que contém informações para a busca.</param>
+            <param name="auth">Objeto que contém informações de autenticação para consumir o serviço.</param>
+            <returns>Objeto que contém informações da busca e uma lista de contas.</returns>
+            <exception cref="!:HttpClientException">Exceção para ações realizadas com o protocolo HTTP.</exception>
+            <exception cref="!:ConnectionException">Exceção quando houver problema na comunicação com o serviço.</exception>
+            <exception cref="!:ServiceException">exceção em caso de parâmentros inconsistentes.
+                Obs.: A lista de erros pode ser capturada através da propriedade 'Errors' desta exceção.</exception>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Account.AccountService.AUTHENTICATION_TYPE">
+            <summary>
+            AUTHENTICATION_TYPE = "Basic"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Account.AccountService.DATA_PARAM">
+            <summary>
+            DATA_PARAM = "data"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Account.AccountService.ENCODING_PARAM">
+            <summary>
+            ENCODING_PARAM = "encode"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Account.AccountService.ENCODING">
+            <summary>
+            ENCODING = "UTF-8"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Account.AccountService.API_VERSION_PARAM">
+            <summary>
+            API_VERSION_PARAM = "version"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Account.AccountService.API_VERSION">
+            <summary>
+            API_VERSION = "1.0"
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Account.AccountService.#ctor">
+            <summary>
+            Construtor padrão do serviço <see cref="T:Buscape.Bcash.Connector.Service.Account.AccountService"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Account.AccountService.SearchAccounts(Buscape.Bcash.Connector.Domain.Account.Search.SearchRequest,Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData)">
+            <summary>
+            Busca todas as contas vinculadas com o CPF informado.
+            </summary>
+            <param name="request">Objeto que contém informações para a busca.</param>
+            <param name="auth">Objeto que contém informações de autenticação para consumir o serviço.</param>
+            <returns>Objeto que contém informações da busca e uma lista de contas.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Account.AccountService.GetParams(System.String)">
+            <summary>
+            Obtém o dicionário de parêmetros.
+            </summary>
+            <param name="data">String JSON contendo os dados da requisição.</param>
+            <returns>Dicionário preenchido com os Parâmetros e Valores.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Account.AccountService.GetAuthBasicHeader(Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData)">
+            <summary>
+            Obtém o dicionário do cabeçalho de autenticação.
+            </summary>
+            <param name="authBasic">Objeto de dados para autenticação básica.</param>
+            <returns>Dicionário preenchido com os Parâmetros e Valores.</returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Service.Account.AccountService.HttpClient">
+            <summary>
+            Client para requisições HTTP.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Http.Client.HttpClientResponse">
+            <summary>
+            Objeto de resposta de uma requisição HTTP.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientResponse.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Http.Client.HttpClientResponse"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Client.HttpClientResponse.#ctor(System.Net.HttpStatusCode,System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Http.Client.HttpClientResponse"/>.
+            </summary>
+            <param name="httpStatus">Código do Status HTTP.</param>
+            <param name="httpStatusText">Descrição do Status HTTP.</param>
+            <param name="responseBody">Resposta da Requisição HTTP.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Client.HttpClientResponse.HttpStatus">
+            <summary>
+            Código do Status HTTP.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Client.HttpClientResponse.HttpStatusText">
+            <summary>
+            Descrição do Status HTTP.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Http.Client.HttpClientResponse.ResponseBody">
+            <summary>
+            Resposta da Requisição HTTP.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Json.BooleanConverter">
+            <summary>
+            Conversor JSON personalizado para tipos Boolean.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Json.BooleanConverter.CanConvert(System.Type)">
+            <summary>
+            Método de verificação se é possível serializar o objeto
+            </summary>
+            <param name="objectType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Json.BooleanConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            Método de leitura de objeto Json
+            </summary>
+            <param name="reader"></param>
+            <param name="objectType"></param>
+            <param name="existingValue"></param>
+            <param name="serializer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Json.BooleanConverter.WriteJson(Newtonsoft.Json.JsonWriter,System.Object,Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            Método de escrita de objeto Json
+            </summary>
+            <param name="writer"></param>
+            <param name="value"></param>
+            <param name="serializer"></param>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.Search.AccountResponse">
+            <summary>
+            Informações da conta retornada pela consulta.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Search.AccountResponse.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Search.AccountResponse"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Search.AccountResponse.#ctor(System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Search.AccountResponse"/>.
+            </summary>
+            <param name="mail">Email do cliente.</param>
+            <param name="token">Token que representa a conta de um comprador no Pagamento Digital e irá validar a vinculação de conta.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.AccountResponse.Mail">
+            <summary>
+            Email do cliente.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.AccountResponse.Token">
+            <summary>
+            Token que representa a conta de um comprador no Pagamento Digital e irá validar a vinculação de conta.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Http.Exception.ConnectionException">
+            <summary>
+            Exceção para erros de conexão.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.ConnectionException.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.ConnectionException"/>
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.ConnectionException.#ctor(System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.ConnectionException"/>
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.ConnectionException.#ctor(System.String,System.Exception)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.ConnectionException"/>
+            </summary>
+            <param name="message"></param>
+            <param name="inner"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Http.Exception.ConnectionException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Http.Exception.ConnectionException"/>
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.Product">
+            <summary>
+            Dados do produto.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Product.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Product"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Product.#ctor(System.String,System.String,System.Int32,System.Decimal,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Product"/>.
+            </summary>
+            <param name="code">Código que identifica o produto em sua loja.</param>
+            <param name="description">Descrição ou nome do(s) produto comprado. Será visualizada pelo cliente.</param>
+            <param name="amount">Quantidade comprada deste produto.</param>
+            <param name="value">Valor unitário do produto.</param>
+            <param name="extraDescription">Descrição adicional do produto.</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Product.#ctor(System.String,System.String,System.Int32,System.Decimal,System.String,Buscape.Bcash.Connector.Domain.Transaction.ExtendedWarranty)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Product"/>.
+            </summary>
+            <param name="code">Código que identifica o produto em sua loja.</param>
+            <param name="description">Descrição ou nome do(s) produto comprado. Será visualizada pelo cliente.</param>
+            <param name="amount">Quantidade comprada deste produto.</param>
+            <param name="value">Valor unitário do produto.</param>
+            <param name="extraDescription">Descrição adicional do produto.</param>
+            <param name="ExtendedWarranty">Objeto contendo informações sobre garantia estendida.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Product.Code">
+            <summary>
+            Código que identifica o produto em sua loja.
+            Tamanho máximo: 50 caracteres.
+            Campo obrigatório.
+            <example>Ex.: 446</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Product.Description">
+            <summary>
+            Descrição ou nome do(s) produto comprado. Será visualizada pelo cliente.
+            Tamanho máximo: 255 caracteres.
+            Campo obrigatório.
+            <example>Ex.: Camiseta da seleção brasileira</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Product.Amount">
+            <summary>
+            Quantidade comprada deste produto.
+            Campo obrigatório.
+            <example>Ex.: 2</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Product.Value">
+            <summary>
+            Valor unitário do produto.
+            Campo obrigatório.
+            <example>Ex.: 10.95</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Product.ExtraDescription">
+            <summary>
+            Descrição adicional do produto.
+            Tamanho máximo: 255 caracteres.
+            <example>Ex.: Tamanho P</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Product.ExtendedWarranty">
+            <summary>
+            Informações sobre a garantia estendida.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Cryptography.MD5Cryptography">
+            <summary>
+            Implementação da criptografia MD5.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Cryptography.MD5Cryptography.Encrypt(System.String)">
+            <summary>
+            Realiza a criptografia na String informada como parâmetro.
+            </summary>
+            <param name="value">String para criptografia.</param>
+            <returns>Valor referente a criptografia da String informada como parâmetro.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Cryptography.MD5Cryptography.Encrypt(System.String,System.String)">
+            <summary>
+            Realiza a criptografia na String informada como parâmetro, de acordo com uma chave.
+            </summary>
+            <param name="value">String para criptografia.</param>
+            <param name="secretKey">Chave para criptografia.</param>
+            <returns>Valor referente a criptografia da String informada como parâmetro, de acordo com a Chave informada.</returns>
+            <exception cref="T:Buscape.Bcash.Connector.Cryptography.CryptographyException">Quando ocorrer algum erro de criptografia.</exception>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData">
+            <summary>
+            Objeto de dados para autenticação OAuth.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.DEFAULT_VERSION">
+            <summary>
+            DEFAULT_VERSION = "1.0"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.DEFAULT_SIGNATURE_METHOD">
+            <summary>
+            DEFAULT_SIGNATURE_METHOD = "PLAINTEXT"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.DEFAULT_REALM">
+            <summary>
+            DEFAULT_REALM = "http://localhost:8080/api-checkout/transaction/create/json"
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.#ctor(System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData"/>.
+            </summary>
+            <param name="consumerKey">Chave de identificação da loja.</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.#ctor(System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData"/>.
+            </summary>
+            <param name="consumerKey">Chave de identificação da loja.</param>
+            <param name="signatureMethod">Tipo válido de assinatura.</param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData"/>.
+            </summary>
+            <param name="consumerKey">Chave de identificação da loja.</param>
+            <param name="signatureMethod">Tipo válido de assinatura.</param>
+            <param name="version">Versão do OAuth utilizado.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.ConsumerKey">
+            <summary>
+            Chave de identificação da loja.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.SignatureMethod">
+            <summary>
+            Tipo válido de assinatura.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.Version">
+            <summary>
+            Versão do OAuth utilizado.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData.Realm">
+            <summary>
+            URL do serviço. Descreve o serviço que será consumido e o tipo de retorno da requisição.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData">
+            <summary>
+            Autenticação básica.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData.#ctor(System.String,System.String)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData"/>.
+            </summary>
+            <param name="mail">Email para autenticação.</param>
+            <param name="keyAccess">Chave de acesso para autenticação.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData.Mail">
+            <summary>
+            Email para autenticação.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Search.AuthenticationBasicData.KeyAccess">
+            <summary>
+            Chave de acesso para autenticação.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth">
+            <summary>
+            Classe usada para autenticação Basic.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth.AUTHENTICATION_TYPE">
+            <summary>
+            AUTHENTICATION_TYPE = "Basic"
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth.#ctor(System.String,System.String)">
+            <summary>
+            Contrutor padrão da classe  <see cref="T:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth"/>.
+            </summary>
+            <param name="email"></param>
+            <param name="token"></param>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth.ToString">
+            <summary>
+            Gera a string para envio na autenticação Basic.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth.email">
+            <summary>
+            User e-mail
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ExtendedWarranty.Search.BasicAuth.token">
+            <summary>
+            User token
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Service.ITransactionService">
+            <summary>
+            Cliente para serviços de transação.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.ITransactionService.CreateTransaction(Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest,Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData)">
+            <summary>
+            Cria uma transação a partir dos dados informados.
+            </summary>
+            <param name="request">Objeto que contém informações para a criação da transação.</param>
+            <param name="oauth">Objeto que contém informações de autenticação para consumir o serviço.</param>
+            <returns>Objeto que contém informações de status da transação criada.</returns>
+            <exception cref="!:HttpClientException">Exceção para ações realizadas com o protocolo HTTP.</exception>
+            <exception cref="!:ConnectionException">Exceção quando houver problema na comunicação com o serviço.</exception>
+            <exception cref="!:ServiceException">Exceção em caso de parâmentros inconsistentes.
+                Obs.: A lista de erros pode ser capturada através da propriedade 'Errors' desta exceção.</exception>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.CreditCard">
+            <summary>
+            Dados de cartão de crédito.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.CreditCard.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.CreditCard"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Transaction.CreditCard.#ctor(System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Transaction.CreditCard"/>.
+            </summary>
+            <param name="holder">Nome do titular do cartão de crédito.</param>
+            <param name="number">Número do cartão de crédito do cliente.</param>
+            <param name="securityCode">Código de segurança do cartão de crédito, geralmente encontrado no verso do cartão.</param>
+            <param name="maturityMonth">Mês de vencimento do cartão de crédito.</param>
+            <param name="maturityYear">Ano de vencimento do cartão de crédito.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.CreditCard.Holder">
+            <summary>
+            Nome do titular do cartão de crédito.
+            Tamanho máximo: 100 caracteres.
+            Campo obrigatório.
+            <example>Ex.: João D. F. Silva</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.CreditCard.Number">
+            <summary>
+            Número do cartão de crédito do cliente.
+            Tamanho máximo: 30 caracteres.
+            Campo obrigatório.
+            <example>Ex.: 4111111111111110</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.CreditCard.SecurityCode">
+            <summary>
+            Código de segurança do cartão de crédito, geralmente encontrado no verso do cartão.
+            Campo obrigatório.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.CreditCard.MaturityMonth">
+            <summary>
+            Mês de vencimento do cartão de crédito.
+            Campo obrigatório.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Transaction.CreditCard.MaturityYear">
+            <summary>
+            Ano de vencimento do cartão de crédito.
+            Campo obrigatório.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Service.Transaction.TransactionService">
+            <summary>
+            Serviço de Transação.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Transaction.TransactionService.AUTHENTICATION_TYPE">
+            <summary>
+            AUTHENTICATION_TYPE = "OAuth"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Transaction.TransactionService.DATA_PARAM">
+            <summary>
+            DATA_PARAM = "data"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Transaction.TransactionService.ENCODING_PARAM">
+            <summary>
+            ENCODING_PARAM = "encode"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Transaction.TransactionService.ENCODING">
+            <summary>
+            ENCODING = "UTF-8"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Transaction.TransactionService.API_VERSION_PARAM">
+            <summary>
+            API_VERSION_PARAM = "version"
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Service.Transaction.TransactionService.API_VERSION">
+            <summary>
+            API_VERSION = "1.0"
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Transaction.TransactionService.#ctor">
+            <summary>
+            Construtor padrão do serviço <see cref="T:Buscape.Bcash.Connector.Service.Transaction.TransactionService"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Transaction.TransactionService.CreateTransaction(Buscape.Bcash.Connector.Domain.Transaction.Create.TransactionRequest,Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData)">
+            <summary>
+            Cria uma transação a partir dos dados informados.
+            </summary>
+            <param name="request">Objeto que contém informações para a criação da transação.</param>
+            <param name="oauth">Objeto que contém informações de autenticação para consumir o serviço.</param>
+            <returns>Objeto que contém informações de status da transação criada.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Transaction.TransactionService.GetParams(System.String)">
+            <summary>
+            Obtém o dicionário de parêmetros.
+            </summary>
+            <param name="data">String JSON contendo os dados da requisição.</param>
+            <returns>Dicionário preenchido com os Parâmetros e Valores.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Service.Transaction.TransactionService.GetOAuthHeader(Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData)">
+            <summary>
+            Obtém o dicionário do cabeçalho de autenticação.
+            </summary>
+            <param name="oauth">Objeto de dados para autenticação OAuth.</param>
+            <returns>Dicionário preenchido com os Parâmetros e Valores.</returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Service.Transaction.TransactionService.HttpClient">
+            <summary>
+            Client para requisições HTTP.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum">
+            <summary>
+            Meios de pagamento disponíveis.
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.VISA">
+            <summary>
+            VISA = 1
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.MASTERCARD">
+            <summary>
+            MASTERCARD = 2
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.AMERICAN_EXPRESS">
+            <summary>
+            AMERICAN_EXPRESS = 37
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.AURA">
+            <summary>
+            AURA = 45
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.DINERS">
+            <summary>
+            DINERS = 55
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.HIPERCARD">
+            <summary>
+            HIPERCARD = 56
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.BANK_SLIP">
+            <summary>
+            BANK_SLIP = 10
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.BB_ONLINE_TRANSFER">
+            <summary>
+            BB_ONLINE_TRANSFER = 58
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.BRADESCO_ONLINE_TRANSFER">
+            <summary>
+            BRADESCO_ONLINE_TRANSFER = 59
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.ITAU_ONLINE_TRANSFER">
+            <summary>
+            ITAU_ONLINE_TRANSFER = 60
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.BANRISUL_ONLINE_TRANSFER">
+            <summary>
+            BANRISUL_ONLINE_TRANSFER = 61
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.HSBC_ONLINE_TRANSFER">
+            <summary>
+            HSBC_ONLINE_TRANSFER = 62
+            </summary>
+        </member>
+        <member name="F:Buscape.Bcash.Connector.Domain.Transaction.PaymentMethodEnum.ELO">
+            <summary>
+            ELO = 63
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Authentication.OAuthUtils">
+            <summary>
+            Utilitários para autenticação OAuth.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Authentication.OAuthUtils.GenerateOAuth(System.String,Buscape.Bcash.Connector.Domain.Transaction.Create.OAuthRequestData)">
+            <summary>
+            Gera o cabeçalho de autenticação OAuth.
+            </summary>
+            <param name="authenticateType">Tipo de Autenticação.</param>
+            <param name="oauth">Objeto de dados para autenticação OAuth.</param>
+            <returns>Cabeçalho de autenticação OAuth.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Authentication.OAuthUtils.GenerateSignature(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Gera a assinatura para autenticação OAuth.
+            </summary>
+            <param name="consumerKey">Chave de identificação da loja.</param>
+            <param name="nonce">Identificador único de transação.</param>
+            <param name="oauthTimestamp">Valor do timestamp corrente.</param>
+            <param name="oauthMethod">Tipo válido de assinatura.</param>
+            <param name="oauthVersion">Versão do OAuth utilizado.</param>
+            <returns>Assinatura para autenticação OAuth.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Authentication.OAuthUtils.GenerateNonce">
+            <summary>
+            Gera identificador único de transação.
+            </summary>
+            <returns>Identificador único de transação.</returns>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Authentication.OAuthUtils.GenerateOAuthTimestamp">
+            <summary>
+            Recupera o valor do timestamp UNIX corrente.
+            </summary>
+            <returns>Valor do timestamp UNIX corrente.</returns>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.PaymentMethod">
+            <summary>
+            Dados do meio de pagamento.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.PaymentMethod.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.PaymentMethod"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.PaymentMethod.#ctor(System.Int32)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.PaymentMethod"/>.
+            </summary>
+            <param name="code">Meio de Pagamento utilizado para processar a transação.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.PaymentMethod.Code">
+            <summary>
+            Meio de Pagamento utilizado para processar a transação.
+            Campo obrigatório.
+            <example>Ex.: PaymentMethodEnum.VISA</example>
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.ResponseError">
+            <summary>
+            Objeto de resposta em caso de erro dos serviços.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ResponseError.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.ResponseError"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.ResponseError.ToString">
+            <summary>
+            Método que gera um texto formatado do erro.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ResponseError.Code">
+            <summary>
+            Código do erro.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.ResponseError.Description">
+            <summary>
+            Descrição para informar a inconsistência.
+            </summary>
+        </member>
+        <member name="T:Buscape.Bcash.Connector.Domain.Account.Customer">
+            <summary>
+            Dados do cliente comprador.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Customer.#ctor">
+            <summary>
+            Construtor padrão da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Customer"/>.
+            </summary>
+        </member>
+        <member name="M:Buscape.Bcash.Connector.Domain.Account.Customer.#ctor(System.String,System.String,System.String,System.String,System.String,System.Char,System.DateTime,System.String,System.DateTime,System.String,System.String,System.String,System.String,System.String,Buscape.Bcash.Connector.Domain.Account.Address)">
+            <summary>
+            Construtor da classe <see cref="T:Buscape.Bcash.Connector.Domain.Account.Customer"/>.
+            </summary>
+            <param name="mail">E-mail do comprador.</param>
+            <param name="name">Nome do comprador.</param>
+            <param name="cpf">CPF do comprador.</param>
+            <param name="phone">Telefone do comprador.</param>
+            <param name="cellPhone">Celular do comprador.</param>
+            <param name="gender">Sexo do comprador.</param>
+            <param name="birthDate">Data de Nascimento do comprador.</param>
+            <param name="rg">RG do comprador.</param>
+            <param name="issueRgDate">Data da emissão do RG do comprador.</param>
+            <param name="organConsignorRg">Órgão Emissor do RG do comprador.</param>
+            <param name="stateConsignorRg">Estado emissor do RG do comprador.</param>
+            <param name="companyName">Razão social do comprador.</param>
+            <param name="cnpj">CNPJ do comprador.</param>
+            <param name="searchToken">Token gerado apartir do serviço de consulta de conta.</param>
+            <param name="address">Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Account.Customer.Address"/>.</param>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.Mail">
+            <summary>
+            E-mail do comprador.
+            Tamanho máximo: 80 caracteres.
+            Campo obrigatório.
+            <example>Ex.: cliente@provedor.com</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.Name">
+            <summary>
+            Nome do comprador.
+            Tamanho máximo: 80 caracteres.
+            Campo obrigatório.
+            <example>Ex.: Antonio Junior</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.Cpf">
+            <summary>
+            CPF do comprador.
+            Tamanho máximo: 17 caracteres.
+            Campo obrigatório.
+            <example>Ex.: 99999999999</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.Phone">
+            <summary>
+            Telefone do comprador: DDD + número telefônico.
+            Tamanho máximo: 20 caracteres.
+            Campo obrigatório, caso não seja informado o campo cellPhone
+            <example>Ex.: 1126267469</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.CellPhone">
+            <summary>
+            Celular do comprador: DDD + número telefônico.
+            Tamanho máximo: 20 caracteres.
+            Campo obrigatório, caso não seja informado o campo phone
+            <example>Ex.: 1199990000</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.Address">
+            <summary>
+            Objeto <see cref="P:Buscape.Bcash.Connector.Domain.Account.Customer.Address"/>.
+            Campo obrigatório.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.Gender">
+            <summary>
+            Sexo do comprador.
+            Tamanho máximo: 1 caracteres.
+            Campo obrigatório.
+            *Vide enum: <see cref="T:Buscape.Bcash.Connector.Domain.Account.GenderEnum"/>.
+            <example>Ex.: GenderEnum.MALE</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.BirthDate">
+            <summary>
+            Data de Nascimento do comprador.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.Rg">
+            <summary>
+            RG do comprador.
+            Tamanho máximo: 17 caracteres.
+            <example>Ex.: 999999999</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.IssueRgDate">
+            <summary>
+            Data da emissão do RG do comprador.
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.OrganConsignorRg">
+            <summary>
+            Órgão Emissor do RG do comprador.
+            Tamanho máximo: 15 caracteres.
+            <example>Ex.: SSP</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.StateConsignorRg">
+            <summary>
+            Estado emissor do RG do comprador.
+            Tamanho máximo: 2 caracteres.
+            *Vide enum: <see cref="T:Buscape.Bcash.Connector.Domain.Account.StateEnum"/>.
+            <example>Ex.: StateEnum.MINAS_GERAIS</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.CompanyName">
+            <summary>
+            Razão social do comprador. Enviado somente quando a conta do cliente for conta Jurídica.
+            Tamanho máximo: 255 caracteres.
+            <example>Ex.: Razão Social da minha empresa</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.Cnpj">
+            <summary>
+            CNPJ do comprador. Enviado somente quando a conta do cliente for conta Jurídica.
+            Tamanho máximo: 30 caracteres.
+            <example>Ex.: 99999999999999</example>
+            </summary>
+        </member>
+        <member name="P:Buscape.Bcash.Connector.Domain.Account.Customer.SearchToken">
+            <summary>
+            Token gerado apartir do serviço de consulta de conta.
+            </summary>
+        </member>
+    </members>
+</doc>

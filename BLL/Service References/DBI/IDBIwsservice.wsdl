@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="urn:DBIwsIntf-IDBIws" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="IDBIwsservice" targetNamespace="urn:DBIwsIntf-IDBIws" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types />
+  <message name="ConsultaOnLine0Request">
+    <part name="usuario" type="xs:string" />
+    <part name="senha" type="xs:string" />
+    <part name="CodigoConsulta" type="xs:int" />
+    <part name="Valor1" type="xs:string" />
+    <part name="Valor2" type="xs:string" />
+    <part name="Valor3" type="xs:string" />
+    <part name="Valor4" type="xs:string" />
+    <part name="Valor5" type="xs:string" />
+  </message>
+  <message name="ConsultaOnLine0Response">
+    <part name="return" type="xs:string" />
+  </message>
+  <message name="VerificaDisponibilidade1Request">
+    <part name="usuario" type="xs:string" />
+    <part name="senha" type="xs:string" />
+    <part name="CodigoConsulta" type="xs:int" />
+  </message>
+  <message name="VerificaDisponibilidade1Response">
+    <part name="return" type="xs:string" />
+  </message>
+  <message name="CheckOnLine2Request" />
+  <message name="CheckOnLine2Response">
+    <part name="return" type="xs:int" />
+  </message>
+  <portType name="IDBIws">
+    <operation name="ConsultaOnLine">
+      <input message="tns:ConsultaOnLine0Request" />
+      <output message="tns:ConsultaOnLine0Response" />
+    </operation>
+    <operation name="VerificaDisponibilidade">
+      <input message="tns:VerificaDisponibilidade1Request" />
+      <output message="tns:VerificaDisponibilidade1Response" />
+    </operation>
+    <operation name="CheckOnLine">
+      <input message="tns:CheckOnLine2Request" />
+      <output message="tns:CheckOnLine2Response" />
+    </operation>
+  </portType>
+  <binding name="IDBIwsbinding" type="tns:IDBIws">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <operation name="ConsultaOnLine">
+      <soap:operation soapAction="urn:DBIwsIntf-IDBIws#ConsultaOnLine" style="rpc" />
+      <input message="tns:ConsultaOnLine0Request">
+        <soap:body use="encoded" namespace="urn:DBIwsIntf-IDBIws" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output message="tns:ConsultaOnLine0Response">
+        <soap:body use="encoded" namespace="urn:DBIwsIntf-IDBIws" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="VerificaDisponibilidade">
+      <soap:operation soapAction="urn:DBIwsIntf-IDBIws#VerificaDisponibilidade" style="rpc" />
+      <input message="tns:VerificaDisponibilidade1Request">
+        <soap:body use="encoded" namespace="urn:DBIwsIntf-IDBIws" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output message="tns:VerificaDisponibilidade1Response">
+        <soap:body use="encoded" namespace="urn:DBIwsIntf-IDBIws" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    <operation name="CheckOnLine">
+      <soap:operation soapAction="urn:DBIwsIntf-IDBIws#CheckOnLine" style="rpc" />
+      <input message="tns:CheckOnLine2Request">
+        <soap:body use="encoded" namespace="urn:DBIwsIntf-IDBIws" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output message="tns:CheckOnLine2Response">
+        <soap:body use="encoded" namespace="urn:DBIwsIntf-IDBIws" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+  </binding>
+  <service name="IDBIwsservice">
+    <port name="IDBIwsPort" binding="tns:IDBIwsbinding">
+      <soap:address location="http://10.10.1.21/dbi/dbiws.dll/soap/IDBIws" />
+    </port>
+  </service>
+</definitions>
